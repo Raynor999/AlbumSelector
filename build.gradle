@@ -1,0 +1,41 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.0-alpha5'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+ext {
+    configuration = [
+            packageName       : "lijunguan.github.io.albumselector",
+            buildToolsVersion : "23.0.2",
+            compileVersion    : 23,
+            minSDK           : 15,
+            targetSDK         : 22,
+            version_code      : 1,
+            version_name      : "0.01"
+
+
+    ]
+    libs         = [
+            supportVersion    : "23.2.1",
+            glide             : "3.7.0",
+            butterknife       : "7.0.1"
+    ]
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
