@@ -1,14 +1,27 @@
 package io.github.lijunguan.album.ui.activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 
+import com.konifar.fab_transformation.FabTransformation;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.github.lijunguan.album.R;
+import io.github.lijunguan.album.adapter.FolderListAdapter;
 import io.github.lijunguan.album.adapter.ImageGridAdapter;
 import io.github.lijunguan.album.base.BaseActivity;
 import io.github.lijunguan.album.entity.AlbumFloder;
@@ -16,11 +29,12 @@ import io.github.lijunguan.album.entity.ImageInfo;
 import io.github.lijunguan.album.presenter.LoadAlbumPresenerImpl;
 import io.github.lijunguan.album.presenter.LoadAlbumPresenter;
 import io.github.lijunguan.album.ui.widget.GridDividerDecorator;
+import io.github.lijunguan.album.utils.FileUtils;
 import io.github.lijunguan.album.utils.KLog;
 import io.github.lijunguan.album.view.AlbumView;
 
 
-public class AlbumActivity extends BaseActivity implements AlbumView {
+public class AlbumActivity extends BaseActivity implements AlbumView, View.OnClickListener {
     public static final String TAG = AlbumActivity.class.getSimpleName();
     /**
      * 图片选择模式，默认多选
@@ -51,15 +65,38 @@ public class AlbumActivity extends BaseActivity implements AlbumView {
     private int spanCount = 3;
 
 
-
     private int mSelectModel;
 
     private int mMaxCount;
+    /**
+     * 所有选择的图片 path 集合
+     */
+    private List<String> mSelectedResult;
+
+    // 请求加载系统照相机
+    private static final int REQUEST_CAMERA = 100;
 
     private LoadAlbumPresenter mLoadALbumPresenter;
-    private RecyclerView mGridRv;
-    private ImageGridAdapter mAdapter;
-    private List<ImageInfo> mImageInfos = new ArrayList<>();
+    /**
+     * 用来展示图片的RecyclerView(Grid)
+     */
+    private RecyclerView mImgGridRv;
+    /**
+     * 相册列表RecyclerView
+     */
+    private RecyclerView mAlbumFloderListRV;
+
+    private ImageGridAdapter mImageAdapter;
+
+    private List<AlbumFloder> mAlbumFloders;
+
+    private FloatingActionButton mFab;
+
+    private View mOverlay;
+
+    private Button mSubmitBtn;
+
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,59 +105,130 @@ public class AlbumActivity extends BaseActivity implements AlbumView {
         if (getIntent() != null) {
             mSelectModel = getIntent().getIntExtra(ARG_SELECT_MODEL, MULTI_MODEL);
             mMaxCount = getIntent().getIntExtra(ARG_SELECT_MAX_COUNT, DEFAULT_MAX_COUNT);
+            mSelectedResult = new ArrayList<>(mMaxCount);
         }
         mLoadALbumPresenter = new LoadAlbumPresenerImpl(this);
         initViews();
     }
 
     private void initViews() {
-        mGridRv = (RecyclerView) findViewById(R.id.recycler_view);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mImgGridRv = (RecyclerView) findViewById(R.id.rv_image_grid);
+        mAlbumFloderListRV = (RecyclerView) findViewById(R.id.rv_album_list);
+        mSubmitBtn = (Button) mToolbar.findViewById(R.id.btn_submit);
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mOverlay = findViewById(R.id.overlay);
+        mFab.setOnClickListener(this);
+        mOverlay.setOnClickListener(this);
+        mSubmitBtn.setOnClickListener(this);
+        mSubmitBtn.setEnabled(false);
         initRecyclerView();
         LoadData();
     }
 
     private void LoadData() {
-        mAdapter = new ImageGridAdapter(this, mImageInfos);
-        mGridRv.setAdapter(mAdapter);
+        mImageAdapter = new ImageGridAdapter(this,mMaxCount);
+        mImgGridRv.setAdapter(mImageAdapter);
         mLoadALbumPresenter.loadAllImageData(this, getSupportLoaderManager());
     }
 
     private void initRecyclerView() {
-        mGridRv.setHasFixedSize(true);
+        mImgGridRv.setHasFixedSize(true);
         GridLayoutManager glManager = new GridLayoutManager(this, spanCount);
-        mGridRv.setLayoutManager(glManager);
-        mGridRv.addItemDecoration(new GridDividerDecorator(this));
+        mImgGridRv.setLayoutManager(glManager);
+        mImgGridRv.addItemDecoration(new GridDividerDecorator(this));
+
+        mAlbumFloderListRV.setHasFixedSize(true);
+        mAlbumFloderListRV.setLayoutManager(new LinearLayoutManager(this));
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.btn_submit) {
+            //返回选择的图片路径集合
+            Intent data = new Intent();
+            data.putStringArrayListExtra(SELECTED_RESULT, (ArrayList<String>) mSelectedResult);
+            setResult(RESULT_OK,data);
+            finish();
+
+        } else if (id == R.id.fab) {
+            if (mFab.getVisibility() == View.VISIBLE) {
+                FabTransformation.with(mFab).setOverlay(mOverlay).transformTo(mAlbumFloderListRV);
+            }
+        } else if (id == R.id.overlay) {
+            FabTransformation.with(mFab).setOverlay(mOverlay).transformFrom(mAlbumFloderListRV);
+        }
     }
 
     @Override
     public void bindAlbumData(List<AlbumFloder> data) {
-
         if (data.isEmpty()) {
             findViewById(R.id.tv_empty).setVisibility(View.VISIBLE);
             return;
         }
-        switchAlbumFolder(data.get(0));
+        mAlbumFloders = data;
+        switchAlbumFolder(mAlbumFloders.get(0));
+        createAlbumList(mAlbumFloders);
     }
+
+    private void createAlbumList(List<AlbumFloder> mAlbumFloders) {
+        mAlbumFloderListRV.setAdapter(new FolderListAdapter(this,mAlbumFloders));
+    }
+
     @Override
     public void switchAlbumFolder(AlbumFloder floder) {
-        if (!mImageInfos.isEmpty()) {
-            mImageInfos.clear();
+        mImageAdapter.setData(floder.getImgInfos());
+        FabTransformation.with(mFab).setOverlay(mOverlay).transformFrom(mAlbumFloderListRV);
+    }
+
+    @Override
+    public void updateSelectedCount(ImageInfo imageInfo) {
+        if (imageInfo.isSelected()) {
+            mSelectedResult.add(imageInfo.getPath());
+        } else {
+            mSelectedResult.remove(imageInfo.getPath());
         }
-        mImageInfos.addAll(floder.getImgInfos());
-        mAdapter.notifyDataSetChanged();
-        mGridRv.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                int count = mGridRv.getChildCount();
-                for (int i = 0; i < count; i++) {
-                    View child = mGridRv.getChildAt(i);
-                    KLog.e("paddingBottom:"+child.getPaddingBottom() + "paddingRight:" + child.getPaddingRight());
+        KLog.i(mSelectedResult);
+    }
 
-                }
+    @Override
+    public void showCarmeraAction() {
+        // 跳转到系统照相机
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(cameraIntent.resolveActivity(this.getPackageManager()) != null){
+            // 设置系统相机拍照后的输出路径
+            // 创建临时文件
+            File tmpFile = null;
+            try {
+                tmpFile  = FileUtils.createTmpFile(this);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        },2000);
+            if(tmpFile != null && tmpFile.exists()) {
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tmpFile));
+                startActivityForResult(cameraIntent, REQUEST_CAMERA);
+            }else{
+                Snackbar.make(mFab, "图片错误", Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
+            }
+        }else{
 
+            Snackbar.make(mFab,R.string.msg_no_camera, Snackbar.LENGTH_SHORT)
+                    .setAction("Action", null).show();
+        }
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (mFab.getVisibility() != View.VISIBLE) {
+            FabTransformation.with(mFab).setOverlay(mOverlay).transformFrom(mAlbumFloderListRV);
+            return;
+        }
+        super.onBackPressed();
     }
 
 

@@ -3,4 +3,8 @@
     <string name="all_picture">所有图片</string>
     <string name="action_settings">Settings</string>
     <string name="album_empy">还没有图片</string>
+    <string name="folder_size">%s 张</string>
+    <string name="out_of_limit">你最多只能选择%d张图片</string>
+    <string name="tip_take_photo">拍摄照片</string>
+    <string name="msg_no_camera">没有系统相机</string>
 </resources>

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="io.github.lijunguan.album.ui.activity.AlbumActivity">
+    android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -17,13 +15,33 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AlbumTheme.PopupOverlay" />
+            app:popupTheme="@style/AlbumTheme.PopupOverlay">
+
+            <Button
+
+                android:id="@+id/btn_submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/action_btn"
+                android:minHeight="1dp"
+                android:minWidth="1dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:text="完成"
+                android:textColor="@color/text"
+                android:textSize="14sp" />
+
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
 
-        android:id="@+id/recycler_view"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_image_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="4dp"
@@ -38,13 +56,29 @@
         android:textSize="16sp"
         android:visibility="gone" />
 
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/mask_color"
+        android:clickable="true"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:elevation="4dp"
-        android:src="@drawable/ic_photo_library_white_24dp" />
+        android:src="@drawable/ic_photo_library_white_24dp"
+        app:elevation="4dp" />
+
+
+    <include
+        layout="@layout/layout_album_list"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_gravity="bottom" />
 
 </android.support.design.widget.CoordinatorLayout>

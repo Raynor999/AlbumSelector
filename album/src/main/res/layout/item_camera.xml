@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#343535">
+   >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:drawablePadding="10dp"
+        android:drawableTop="@drawable/ic_add_a_photo_grey_100_36dp"
+        android:gravity="center_horizontal"
+        android:text="@string/tip_take_photo"
+        android:textColor="#CDCECE"
+        android:textSize="14sp" />
+</FrameLayout>

@@ -10,11 +10,6 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
-    <android.support.v7.widget.AppCompatCheckBox
-        android:id="@+id/cb_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right|top" />
 
     <View
         android:id="@+id/mask"
@@ -22,5 +17,10 @@
         android:layout_height="match_parent"
         android:background="@color/mask_color"
         android:visibility="gone" />
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/cb_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top" />
 
 </FrameLayout>
