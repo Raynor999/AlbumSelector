@@ -18,6 +18,7 @@ import java.util.List;
 
 import io.github.lijunguan.album.R;
 import io.github.lijunguan.album.entity.ImageInfo;
+import io.github.lijunguan.album.ui.activity.AlbumActivity;
 import io.github.lijunguan.album.utils.KLog;
 import io.github.lijunguan.album.view.AlbumView;
 
@@ -45,15 +46,16 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      */
     private int mMaxCount;
 
-
+    private int mSelectModel;
     /**
      * 已选择的个数
      */
     private int mSelectedCount = 0;
 
-    public ImageGridAdapter(AlbumView albumView, int maxCount) {
+    public ImageGridAdapter(AlbumView albumView, int maxCount, int selectModel) {
         mAlbumView = albumView;
         mMaxCount = maxCount;
+        mSelectModel = selectModel;
         if (mAlbumView instanceof Context) {
             mContext = (Context) mAlbumView;
         }
@@ -84,6 +86,12 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         } else {
             rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_camera, parent, false);
             rootView.getLayoutParams().height = height;
+            rootView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAlbumView.showCarmeraAction();
+                }
+            });
             return new RecyclerView.ViewHolder(rootView) {
             };
         }
@@ -91,43 +99,62 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-        if (position > 0 && holder instanceof ImageViewHolder) {
+        if (position > 0) {
+
+
             final ImageViewHolder imgHolder = (ImageViewHolder) holder;
             final ImageInfo item = getItem(position);
-            //这里使用CheckBox的OnClickListener监听,而不是OnCheckedChangeListener ,当调用CheckBox的CheckBox.setChecked（）
-            //方法时又会触发OnCheckedChangeListener监听，加上VieHolder缓存服用， 问题简直不能更多！！！  用OnClickListener巧妙解决
-            ((ImageViewHolder) imgHolder).mCheckBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CheckBox checkBox = (CheckBox) v;
-                    boolean isChecked = checkBox.isChecked();
-                    if (isChecked) {
-                        mSelectedCount++;
-                    } else {
-                        mSelectedCount--;
+
+            if (mSelectModel == AlbumActivity.MULTI_MODEL) {
+                //这里使用CheckBox的OnClickListener监听,而不是OnCheckedChangeListener ,当调用CheckBox的CheckBox.setChecked（）
+                //方法时又会触发OnCheckedChangeListener监听，加上VieHolder缓存服用， 问题简直不能更多！！！  用OnClickListener巧妙解决
+                imgHolder.mCheckBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        CheckBox checkBox = (CheckBox) v;
+                        boolean isChecked = checkBox.isChecked();
+                        if (isChecked) {
+                            mSelectedCount++;
+                        } else {
+                            mSelectedCount--;
+                        }
+
+                        if (mSelectedCount <= mMaxCount) {
+                            ImageInfo imageInfo = getItem(position);
+                            imageInfo.setSelected(isChecked);
+                            imgHolder.mMaskView.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                            mAlbumView.updateSelectedCount(imageInfo);
+                        } else {
+                            mSelectedCount--;
+                            imgHolder.mCheckBox.setChecked(false);
+                            // Toast.makeText(mContext, mContext.getString(R.string.out_of_limit, mMaxCount), Toast.LENGTH_SHORT).show();
+                            Snackbar.make(holder.itemView, mContext.getString(R.string.out_of_limit, mMaxCount), Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+                        }
+
+                        KLog.i("ImageViewHolder", "displayName:" + item.getDisplayName() + " postition:" + position);
+                        KLog.i("ImageViewHolder", "mSelectedCount:" + mSelectedCount);
                     }
+                });
 
-                    if (mSelectedCount <= mMaxCount) {
-                        ImageInfo imageInfo = getItem(position);
-                        imageInfo.setSelected(isChecked);
-                        imgHolder.mMaskView.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-                        mAlbumView.updateSelectedCount(imageInfo);
-                    } else {
-                        mSelectedCount--;
-                        imgHolder.mCheckBox.setChecked(false);
-                        // Toast.makeText(mContext, mContext.getString(R.string.out_of_limit, mMaxCount), Toast.LENGTH_SHORT).show();
-                        Snackbar.make(holder.itemView, mContext.getString(R.string.out_of_limit, mMaxCount), Snackbar.LENGTH_SHORT)
-                                .setAction("Action", null).show();
+                imgHolder.mCheckBox.setChecked(item.isSelected());
+                imgHolder.mMaskView.setVisibility(item.isSelected() ? View.VISIBLE : View.GONE);
+                imgHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //TODO 预览图片
                     }
+                });
+            } else if (mSelectModel == AlbumActivity.SINGLE_MODEL){
+                imgHolder.mCheckBox.setVisibility(View.GONE);
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //TODO 裁剪图片，设置头像
 
-                    KLog.i("ImageViewHolder", "displayName:" + item.getDisplayName() + " postition:" + position);
-                    KLog.i("ImageViewHolder", "mSelectedCount:" + mSelectedCount);
-                }
-            });
-
-            imgHolder.mCheckBox.setChecked(item.isSelected());
-            imgHolder.mMaskView.setVisibility(item.isSelected() ? View.VISIBLE : View.GONE);
-
+                    }
+                });
+            }
             Glide.with(mContext)
                     .load(item.getPath())
                     .placeholder(R.drawable.placeholder)

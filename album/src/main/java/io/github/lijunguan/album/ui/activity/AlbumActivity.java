@@ -71,7 +71,7 @@ public class AlbumActivity extends BaseActivity implements AlbumView, View.OnCli
     /**
      * 所有选择的图片 path 集合
      */
-    private List<String> mSelectedResult;
+    private ArrayList<String> mSelectedResult;
 
     // 请求加载系统照相机
     private static final int REQUEST_CAMERA = 100;
@@ -97,6 +97,7 @@ public class AlbumActivity extends BaseActivity implements AlbumView, View.OnCli
     private Button mSubmitBtn;
 
     private Toolbar mToolbar;
+    private File mTmpFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +130,7 @@ public class AlbumActivity extends BaseActivity implements AlbumView, View.OnCli
     }
 
     private void LoadData() {
-        mImageAdapter = new ImageGridAdapter(this,mMaxCount);
+        mImageAdapter = new ImageGridAdapter(this,mMaxCount,mSelectModel);
         mImgGridRv.setAdapter(mImageAdapter);
         mLoadALbumPresenter.loadAllImageData(this, getSupportLoaderManager());
     }
@@ -151,7 +152,7 @@ public class AlbumActivity extends BaseActivity implements AlbumView, View.OnCli
         if (id == R.id.btn_submit) {
             //返回选择的图片路径集合
             Intent data = new Intent();
-            data.putStringArrayListExtra(SELECTED_RESULT, (ArrayList<String>) mSelectedResult);
+            data.putStringArrayListExtra(SELECTED_RESULT,  mSelectedResult);
             setResult(RESULT_OK,data);
             finish();
 
@@ -192,6 +193,10 @@ public class AlbumActivity extends BaseActivity implements AlbumView, View.OnCli
         } else {
             mSelectedResult.remove(imageInfo.getPath());
         }
+        if (mSelectedResult.size() > 0) {
+            mSubmitBtn.setText("完成（"+mSelectedResult.size()+"/9)");
+            mSubmitBtn.setEnabled(true);
+        }
         KLog.i(mSelectedResult);
     }
 
@@ -202,14 +207,14 @@ public class AlbumActivity extends BaseActivity implements AlbumView, View.OnCli
         if(cameraIntent.resolveActivity(this.getPackageManager()) != null){
             // 设置系统相机拍照后的输出路径
             // 创建临时文件
-            File tmpFile = null;
+            mTmpFile = null;
             try {
-                tmpFile  = FileUtils.createTmpFile(this);
+                mTmpFile = FileUtils.createTmpFile(this);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if(tmpFile != null && tmpFile.exists()) {
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tmpFile));
+            if(mTmpFile != null && mTmpFile.exists()) {
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTmpFile));
                 startActivityForResult(cameraIntent, REQUEST_CAMERA);
             }else{
                 Snackbar.make(mFab, "图片错误", Snackbar.LENGTH_SHORT)
@@ -219,6 +224,32 @@ public class AlbumActivity extends BaseActivity implements AlbumView, View.OnCli
 
             Snackbar.make(mFab,R.string.msg_no_camera, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CAMERA) {
+            if (resultCode == RESULT_OK) {
+                if (mTmpFile != null) {
+                    // notify system
+                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(mTmpFile)));
+                    Intent intent = new Intent();
+                    mSelectedResult.add(mTmpFile.getAbsolutePath());
+                    intent.putStringArrayListExtra(SELECTED_RESULT, mSelectedResult);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+            } else {
+                //删除零时文件
+                while (mTmpFile != null && mTmpFile.exists()){
+                    boolean success = mTmpFile.delete();
+                    if(success){
+                        mTmpFile = null;
+                    }
+                }
+            }
         }
     }
 
