@@ -7,6 +7,7 @@ import android.support.v4.app.LoaderManager;
 import java.util.List;
 
 import io.github.lijunguan.album.entity.AlbumFloder;
+import io.github.lijunguan.album.entity.ImageInfo;
 import io.github.lijunguan.album.model.LoadAlbumModel;
 import io.github.lijunguan.album.model.LoadAlbumModelImpl;
 import io.github.lijunguan.album.view.AlbumView;
@@ -34,5 +35,9 @@ public class LoadAlbumPresenerImpl implements LoadAlbumPresenter{
                 mAlbumView.bindAlbumData(floders); //绑定相册数据
             }
         });
+    }
+
+    public AlbumFloder getFloderByImageInfo(ImageInfo imageInfo) {
+        return mLoadAlbumModel.getAlbumFloder(imageInfo);
     }
 }

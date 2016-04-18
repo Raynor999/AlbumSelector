@@ -32,9 +32,10 @@ import io.github.lijunguan.album.ui.widget.GridDividerDecorator;
 import io.github.lijunguan.album.utils.FileUtils;
 import io.github.lijunguan.album.utils.KLog;
 import io.github.lijunguan.album.view.AlbumView;
+import io.github.lijunguan.album.view.SelectedImgView;
 
 
-public class AlbumActivity extends BaseActivity implements AlbumView, View.OnClickListener {
+public class AlbumActivity extends BaseActivity implements AlbumView,SelectedImgView, View.OnClickListener {
     public static final String TAG = AlbumActivity.class.getSimpleName();
     /**
      * 图片选择模式，默认多选
@@ -110,6 +111,8 @@ public class AlbumActivity extends BaseActivity implements AlbumView, View.OnCli
         }
         mLoadALbumPresenter = new LoadAlbumPresenerImpl(this);
         initViews();
+        Bundle bundle = new Bundle();
+
     }
 
     private void initViews() {
@@ -233,7 +236,7 @@ public class AlbumActivity extends BaseActivity implements AlbumView, View.OnCli
         if (requestCode == REQUEST_CAMERA) {
             if (resultCode == RESULT_OK) {
                 if (mTmpFile != null) {
-                    // notify system
+                    // notify system ,保存拍照的照片到MediaStore,
                     sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(mTmpFile)));
                     Intent intent = new Intent();
                     mSelectedResult.add(mTmpFile.getAbsolutePath());

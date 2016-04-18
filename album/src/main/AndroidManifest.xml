@@ -11,7 +11,8 @@
         <activity
             android:name=".ui.activity.AlbumActivity"
             android:label="@string/title_activity_album"
-            android:theme="@style/AlbumTheme"/>
+            android:theme="@style/AlbumTheme" />
+        <activity android:name=".ui.activity.PreviewActivity"></activity>
     </application>
 
 </manifest>

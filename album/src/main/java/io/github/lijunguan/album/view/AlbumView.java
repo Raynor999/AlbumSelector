@@ -3,7 +3,6 @@ package io.github.lijunguan.album.view;
 import java.util.List;
 
 import io.github.lijunguan.album.entity.AlbumFloder;
-import io.github.lijunguan.album.entity.ImageInfo;
 
 
 /**
@@ -24,11 +23,7 @@ public interface AlbumView {
      */
     void switchAlbumFolder(AlbumFloder floder);
 
-    /**
-     *
-     * @param imageInfo
-     */
-    void updateSelectedCount(ImageInfo imageInfo);
+
 
     void showCarmeraAction();
 }

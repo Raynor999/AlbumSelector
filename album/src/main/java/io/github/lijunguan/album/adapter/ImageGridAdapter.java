@@ -1,5 +1,6 @@
 package io.github.lijunguan.album.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -20,7 +21,7 @@ import io.github.lijunguan.album.R;
 import io.github.lijunguan.album.entity.ImageInfo;
 import io.github.lijunguan.album.ui.activity.AlbumActivity;
 import io.github.lijunguan.album.utils.KLog;
-import io.github.lijunguan.album.view.AlbumView;
+import io.github.lijunguan.album.view.SelectedImgView;
 
 
 /**
@@ -38,8 +39,6 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private int mSpanCount;
 
-    private AlbumView mAlbumView;
-
     private Context mContext;
     /**
      * 允许选择的最大个数
@@ -52,13 +51,11 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      */
     private int mSelectedCount = 0;
 
-    public ImageGridAdapter(AlbumView albumView, int maxCount, int selectModel) {
-        mAlbumView = albumView;
+    public ImageGridAdapter(Activity activity, int maxCount, int selectModel) {
+        mContext = activity;
         mMaxCount = maxCount;
         mSelectModel = selectModel;
-        if (mAlbumView instanceof Context) {
-            mContext = (Context) mAlbumView;
-        }
+
     }
 
     public void setData(@NonNull List<ImageInfo> data) {
@@ -84,12 +81,15 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             rootView.getLayoutParams().height = height;
             return new ImageViewHolder(rootView);
         } else {
+            //inflate 拍照 item
             rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_camera, parent, false);
             rootView.getLayoutParams().height = height;
             rootView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mAlbumView.showCarmeraAction();
+                    if (mContext instanceof AlbumActivity) {
+                        ((AlbumActivity) mContext).showCarmeraAction();
+                    }
                 }
             });
             return new RecyclerView.ViewHolder(rootView) {
@@ -98,10 +98,9 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder( RecyclerView.ViewHolder holder, int position) {
+
         if (position > 0) {
-
-
             final ImageViewHolder imgHolder = (ImageViewHolder) holder;
             final ImageInfo item = getItem(position);
 
@@ -120,19 +119,22 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         }
 
                         if (mSelectedCount <= mMaxCount) {
-                            ImageInfo imageInfo = getItem(position);
+                            ImageInfo imageInfo = getItem(imgHolder.getAdapterPosition());
                             imageInfo.setSelected(isChecked);
                             imgHolder.mMaskView.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-                            mAlbumView.updateSelectedCount(imageInfo);
+                            if (mContext instanceof SelectedImgView) {
+                                ((SelectedImgView) mContext).updateSelectedCount(imageInfo);
+                            }
+
                         } else {
                             mSelectedCount--;
                             imgHolder.mCheckBox.setChecked(false);
                             // Toast.makeText(mContext, mContext.getString(R.string.out_of_limit, mMaxCount), Toast.LENGTH_SHORT).show();
-                            Snackbar.make(holder.itemView, mContext.getString(R.string.out_of_limit, mMaxCount), Snackbar.LENGTH_SHORT)
+                            Snackbar.make(imgHolder.itemView, mContext.getString(R.string.out_of_limit, mMaxCount), Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
                         }
 
-                        KLog.i("ImageViewHolder", "displayName:" + item.getDisplayName() + " postition:" + position);
+                        KLog.i("ImageViewHolder", "displayName:" + item.getDisplayName() + " postition:" + imgHolder.getAdapterPosition());
                         KLog.i("ImageViewHolder", "mSelectedCount:" + mSelectedCount);
                     }
                 });
@@ -145,7 +147,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         //TODO 预览图片
                     }
                 });
-            } else if (mSelectModel == AlbumActivity.SINGLE_MODEL){
+            } else if (mSelectModel == AlbumActivity.SINGLE_MODEL) {
                 imgHolder.mCheckBox.setVisibility(View.GONE);
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -181,7 +183,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    class ImageViewHolder extends RecyclerView.ViewHolder {
+    static class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageView mImageView;
         View mMaskView;
         CheckBox mCheckBox;

@@ -4,6 +4,9 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 
+import io.github.lijunguan.album.entity.AlbumFloder;
+import io.github.lijunguan.album.entity.ImageInfo;
+
 /**
  * Created by lijunguan on 2016/4/8
  * email: lijunguan199210@gmail.com
@@ -16,4 +19,6 @@ public interface LoadAlbumPresenter {
      * @param loaderManager
      */
     void loadAllImageData(@NonNull Context context, @NonNull LoaderManager loaderManager);
+
+    AlbumFloder getFloderByImageInfo(ImageInfo imageInfo);
 }

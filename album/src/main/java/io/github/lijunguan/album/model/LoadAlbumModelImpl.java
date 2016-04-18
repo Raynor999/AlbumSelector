@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import io.github.lijunguan.album.R;
 import io.github.lijunguan.album.entity.AlbumFloder;
@@ -46,12 +45,11 @@ public class LoadAlbumModelImpl implements LoadAlbumModel {
 
     private OnLoadAllImageFinish mOnScanImageFinish;
 
-    private List<AlbumFloder> mAlbumFloderList = new ArrayList<>();
-
 
     //非空注解，参数都不能为空
     @Override
-    public void loadAllImage(@NonNull final Context context, @NonNull LoaderManager loaderManager, @NonNull final OnLoadAllImageFinish listener) {
+    public void loadAllImage(@NonNull final Context context,
+                             @NonNull LoaderManager loaderManager, @NonNull final OnLoadAllImageFinish listener) {
         mOnScanImageFinish = listener;
 
         LoaderManager.LoaderCallbacks imgLoadCallback = new LoaderManager.LoaderCallbacks<Cursor>() {
@@ -66,7 +64,8 @@ public class LoadAlbumModelImpl implements LoadAlbumModel {
             public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
                 if (data == null) return;
                 if (data.getCount() <= 0) {
-                    mOnScanImageFinish.onFinsh(Collections.EMPTY_LIST);  //无图片返回EmptyList
+                    if (mOnScanImageFinish != null)
+                        mOnScanImageFinish.onFinsh(Collections.EMPTY_LIST);  //无图片返回EmptyList
                     return;
                 }
                 //创建包涵所有图片的相册目录
@@ -97,8 +96,11 @@ public class LoadAlbumModelImpl implements LoadAlbumModel {
                     }
                 }
                 allAlbumFolder.setCover(allAlbumFolder.getImgInfos().get(0));
-                KLog.d(TAG,"onLoadFinished :" + mAlbumFloderList.size());
-                mOnScanImageFinish.onFinsh(mAlbumFloderList);
+                KLog.d(TAG, "onLoadFinished :" + mAlbumFloderList.size());
+
+                if (mOnScanImageFinish != null) {
+                    mOnScanImageFinish.onFinsh(mAlbumFloderList);
+                }
             }
 
 
@@ -113,6 +115,7 @@ public class LoadAlbumModelImpl implements LoadAlbumModel {
 
     /**
      * 根据传入的路径得到AlbumFloder对象
+     *
      * @param path 文件路径
      * @return 如果mAlbumFloders集合中存在 改path路径的albumFolder则返回AlbumFloder ，否则返回null
      */
@@ -135,5 +138,16 @@ public class LoadAlbumModelImpl implements LoadAlbumModel {
         long addedTime = data.getLong(data.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED));
         long imageSize = data.getLong(data.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE));
         return new ImageInfo(imgPath, displayName, addedTime, imageSize);
+    }
+
+    @Override
+    public AlbumFloder getAlbumFloder(@NonNull ImageInfo imageInfo) {
+        if (imageInfo == null) return null;
+        for (AlbumFloder floder : mAlbumFloderList) {
+            if (floder.getImgInfos().contains(imageInfo)) {
+                return floder;
+            }
+        }
+        return null;
     }
 }
