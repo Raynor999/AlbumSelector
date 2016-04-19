@@ -1,6 +1,6 @@
 package io.github.lijunguan.album.view;
 
-import io.github.lijunguan.album.entity.ImageInfo;
+import io.github.lijunguan.album.model.entity.ImageInfo;
 
 /**
  * Created by lijunguan on 2016/4/18

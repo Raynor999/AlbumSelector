@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import io.github.lijunguan.album.R;
-import io.github.lijunguan.album.entity.AlbumFloder;
+import io.github.lijunguan.album.model.entity.AlbumFloder;
 import io.github.lijunguan.album.view.AlbumView;
 
 /**

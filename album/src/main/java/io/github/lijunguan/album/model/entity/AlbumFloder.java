@@ -1,4 +1,4 @@
-package io.github.lijunguan.album.entity;
+package io.github.lijunguan.album.model.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;

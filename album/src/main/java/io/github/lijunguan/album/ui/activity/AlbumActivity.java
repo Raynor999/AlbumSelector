@@ -24,8 +24,8 @@ import io.github.lijunguan.album.R;
 import io.github.lijunguan.album.adapter.FolderListAdapter;
 import io.github.lijunguan.album.adapter.ImageGridAdapter;
 import io.github.lijunguan.album.base.BaseActivity;
-import io.github.lijunguan.album.entity.AlbumFloder;
-import io.github.lijunguan.album.entity.ImageInfo;
+import io.github.lijunguan.album.model.entity.AlbumFloder;
+import io.github.lijunguan.album.model.entity.ImageInfo;
 import io.github.lijunguan.album.presenter.LoadAlbumPresenerImpl;
 import io.github.lijunguan.album.presenter.LoadAlbumPresenter;
 import io.github.lijunguan.album.ui.widget.GridDividerDecorator;
@@ -35,7 +35,7 @@ import io.github.lijunguan.album.view.AlbumView;
 import io.github.lijunguan.album.view.SelectedImgView;
 
 
-public class AlbumActivity extends BaseActivity implements AlbumView,SelectedImgView, View.OnClickListener {
+public class AlbumActivity extends BaseActivity implements AlbumView, SelectedImgView, View.OnClickListener {
     public static final String TAG = AlbumActivity.class.getSimpleName();
     /**
      * 图片选择模式，默认多选
@@ -133,7 +133,7 @@ public class AlbumActivity extends BaseActivity implements AlbumView,SelectedImg
     }
 
     private void LoadData() {
-        mImageAdapter = new ImageGridAdapter(this,mMaxCount,mSelectModel);
+        mImageAdapter = new ImageGridAdapter(this, mMaxCount, mSelectModel);
         mImgGridRv.setAdapter(mImageAdapter);
         mLoadALbumPresenter.loadAllImageData(this, getSupportLoaderManager());
     }
@@ -155,8 +155,8 @@ public class AlbumActivity extends BaseActivity implements AlbumView,SelectedImg
         if (id == R.id.btn_submit) {
             //返回选择的图片路径集合
             Intent data = new Intent();
-            data.putStringArrayListExtra(SELECTED_RESULT,  mSelectedResult);
-            setResult(RESULT_OK,data);
+            data.putStringArrayListExtra(SELECTED_RESULT, mSelectedResult);
+            setResult(RESULT_OK, data);
             finish();
 
         } else if (id == R.id.fab) {
@@ -180,7 +180,7 @@ public class AlbumActivity extends BaseActivity implements AlbumView,SelectedImg
     }
 
     private void createAlbumList(List<AlbumFloder> mAlbumFloders) {
-        mAlbumFloderListRV.setAdapter(new FolderListAdapter(this,mAlbumFloders));
+        mAlbumFloderListRV.setAdapter(new FolderListAdapter(this, mAlbumFloders));
     }
 
     @Override
@@ -197,7 +197,7 @@ public class AlbumActivity extends BaseActivity implements AlbumView,SelectedImg
             mSelectedResult.remove(imageInfo.getPath());
         }
         if (mSelectedResult.size() > 0) {
-            mSubmitBtn.setText("完成（"+mSelectedResult.size()+"/9)");
+            mSubmitBtn.setText("完成（" + mSelectedResult.size() + "/9)");
             mSubmitBtn.setEnabled(true);
         }
         KLog.i(mSelectedResult);
@@ -207,7 +207,7 @@ public class AlbumActivity extends BaseActivity implements AlbumView,SelectedImg
     public void showCarmeraAction() {
         // 跳转到系统照相机
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(cameraIntent.resolveActivity(this.getPackageManager()) != null){
+        if (cameraIntent.resolveActivity(this.getPackageManager()) != null) {
             // 设置系统相机拍照后的输出路径
             // 创建临时文件
             mTmpFile = null;
@@ -216,16 +216,16 @@ public class AlbumActivity extends BaseActivity implements AlbumView,SelectedImg
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if(mTmpFile != null && mTmpFile.exists()) {
+            if (mTmpFile != null && mTmpFile.exists()) {
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTmpFile));
                 startActivityForResult(cameraIntent, REQUEST_CAMERA);
-            }else{
+            } else {
                 Snackbar.make(mFab, "图片错误", Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();
             }
-        }else{
+        } else {
 
-            Snackbar.make(mFab,R.string.msg_no_camera, Snackbar.LENGTH_SHORT)
+            Snackbar.make(mFab, R.string.msg_no_camera, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
         }
     }
@@ -246,9 +246,9 @@ public class AlbumActivity extends BaseActivity implements AlbumView,SelectedImg
                 }
             } else {
                 //删除零时文件
-                while (mTmpFile != null && mTmpFile.exists()){
+                while (mTmpFile != null && mTmpFile.exists()) {
                     boolean success = mTmpFile.delete();
-                    if(success){
+                    if (success) {
                         mTmpFile = null;
                     }
                 }
@@ -266,4 +266,20 @@ public class AlbumActivity extends BaseActivity implements AlbumView,SelectedImg
     }
 
 
+    public static class Builder {
+        protected int maxCount;
+        protected SelectModel mSelectedModel;
+
+
+        protected enum SelectModel {
+            /**
+             * 多选模式
+             */
+            MULTI,
+            /**
+             *单选模式
+             */
+            SINGLE
+        }
+    }
 }

@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import io.github.lijunguan.album.R;
-import io.github.lijunguan.album.entity.AlbumFloder;
-import io.github.lijunguan.album.entity.ImageInfo;
+import io.github.lijunguan.album.model.entity.AlbumFloder;
+import io.github.lijunguan.album.model.entity.ImageInfo;
 import io.github.lijunguan.album.utils.KLog;
 
 

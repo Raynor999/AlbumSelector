@@ -15,23 +15,7 @@
         android:paddingTop="4dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <TextView
-        android:id="@+id/tv_empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/album_empy"
-        android:textSize="16sp"
-        android:visibility="gone" />
 
-    <View
-        android:id="@+id/overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/mask_color"
-        android:clickable="true"
-        android:visibility="gone"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -42,11 +26,6 @@
         android:src="@drawable/ic_photo_library_white_24dp"
         app:elevation="4dp" />
 
-
-    <include
-        layout="@layout/layout_album_list"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_gravity="bottom" />
+    <include layout="@layout/layout_album_list" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -6,8 +6,8 @@ import android.support.v4.app.LoaderManager;
 
 import java.util.List;
 
-import io.github.lijunguan.album.entity.AlbumFloder;
-import io.github.lijunguan.album.entity.ImageInfo;
+import io.github.lijunguan.album.model.entity.AlbumFloder;
+import io.github.lijunguan.album.model.entity.ImageInfo;
 import io.github.lijunguan.album.model.LoadAlbumModel;
 import io.github.lijunguan.album.model.LoadAlbumModelImpl;
 import io.github.lijunguan.album.view.AlbumView;

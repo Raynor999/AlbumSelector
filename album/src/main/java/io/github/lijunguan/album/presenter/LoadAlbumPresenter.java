@@ -4,8 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 
-import io.github.lijunguan.album.entity.AlbumFloder;
-import io.github.lijunguan.album.entity.ImageInfo;
+import io.github.lijunguan.album.model.entity.AlbumFloder;
+import io.github.lijunguan.album.model.entity.ImageInfo;
 
 /**
  * Created by lijunguan on 2016/4/8

@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.github.lijunguan.album.R;
-import io.github.lijunguan.album.entity.ImageInfo;
+import io.github.lijunguan.album.model.entity.ImageInfo;
 import io.github.lijunguan.album.ui.activity.AlbumActivity;
 import io.github.lijunguan.album.utils.KLog;
 import io.github.lijunguan.album.view.SelectedImgView;

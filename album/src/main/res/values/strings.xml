@@ -7,4 +7,5 @@
     <string name="out_of_limit">你最多只能选择%d张图片</string>
     <string name="tip_take_photo">拍摄照片</string>
     <string name="msg_no_camera">没有系统相机</string>
+    <string name="no_image">手机还没有图片，快去拍一张吧</string>
 </resources>
