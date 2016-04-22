@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_image_grid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="4dp" />
+
+    <include layout="@layout/layout_no_image" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_photo_library_white_24dp"
+        app:borderWidth="0dp"
+        app:elevation="4dp"
+        app:layout_anchor="@id/rv_image_grid"
+        app:layout_anchorGravity="bottom|right|end" />
+
+    <include layout="@layout/layout_album_list" />
+
+</android.support.design.widget.CoordinatorLayout>

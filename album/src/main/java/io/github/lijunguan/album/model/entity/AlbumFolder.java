@@ -10,7 +10,7 @@ import java.util.List;
  * email: lijunguan199210@gmail.com
  * blog : https://lijunguan.github.io
  */
-public class AlbumFloder implements Parcelable {
+public class AlbumFolder implements Parcelable {
     /**
      * 相册目录的路径
      */
@@ -60,7 +60,7 @@ public class AlbumFloder implements Parcelable {
         this.mCover = mCover;
     }
 
-    public AlbumFloder() {
+    public AlbumFolder() {
     }
 
 
@@ -77,22 +77,22 @@ public class AlbumFloder implements Parcelable {
         dest.writeParcelable(this.mCover, flags);
     }
 
-    protected AlbumFloder(Parcel in) {
+    protected AlbumFolder(Parcel in) {
         this.mPath = in.readString();
         this.mFloderName = in.readString();
         this.mImgInfos = in.createTypedArrayList(ImageInfo.CREATOR);
         this.mCover = in.readParcelable(ImageInfo.class.getClassLoader());
     }
 
-    public static final Creator<AlbumFloder> CREATOR = new Creator<AlbumFloder>() {
+    public static final Creator<AlbumFolder> CREATOR = new Creator<AlbumFolder>() {
         @Override
-        public AlbumFloder createFromParcel(Parcel source) {
-            return new AlbumFloder(source);
+        public AlbumFolder createFromParcel(Parcel source) {
+            return new AlbumFolder(source);
         }
 
         @Override
-        public AlbumFloder[] newArray(int size) {
-            return new AlbumFloder[size];
+        public AlbumFolder[] newArray(int size) {
+            return new AlbumFolder[size];
         }
     };
 }

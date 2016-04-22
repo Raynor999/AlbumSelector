@@ -1,14 +1,11 @@
 <resources>
 
-    <style name="AlbumTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
+    <style name="AlbumTheme" parent="Base.AlbumTheme" />
 
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-
-        <item name="android:listDivider">@drawable/divider_bg</item>
-    </style>
+    <!--<style name="AppTheme.OverlapSystemBar" parent="Base.AlbumTheme">-->
+        <!--<item name="android:windowDrawsSystemBarBackgrounds">false</item>-->
+        <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <!--<item name="android:fitsSystemWindows">true</item>-->
+    <!--</style>-->
 </resources>

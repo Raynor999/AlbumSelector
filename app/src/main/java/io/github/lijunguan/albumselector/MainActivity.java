@@ -18,7 +18,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.github.lijunguan.album.ui.activity.AlbumActivity;
+import io.github.lijunguan.album.ImgSelector;
+import io.github.lijunguan.album.utils.KLog;
 
 public class MainActivity extends AppCompatActivity {
     private static final int SELECT_IMAGE_REQUEST = 100;
@@ -28,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
 
     private SelectedImgAdapter mAdapter;
-    private List<String > mImagePaths = new ArrayList<>();
+    private List<String> mImagePaths = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,19 +39,20 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this,3));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mAdapter = new SelectedImgAdapter();
         mRecyclerView.setAdapter(mAdapter);
     }
 
     @OnClick(R.id.fab)
     public void testAlbum(View view) {
-        Intent intent = new Intent(this, AlbumActivity.class);
-        intent.putExtra(AlbumActivity.ARG_SELECT_MAX_COUNT, 8);
-        intent.putExtra(AlbumActivity.ARG_SELECT_MODEL, AlbumActivity.MULTI_MODEL);
-        startActivityForResult(intent,SELECT_IMAGE_REQUEST);
-    }
+        ImgSelector.getInstance()
+                .setMaxCount(6)
+                .setShowCamera(true)
+                .setSelectModel(ImgSelector.MULTI_MODEL)
+                .startSelect(this);
 
+    }
 
 
     @Override
@@ -61,11 +64,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SELECT_IMAGE_REQUEST) {
+        if (requestCode == ImgSelector.REQUEST_SELECT_IMAGE) {
             if (resultCode == RESULT_OK) {
-                mImagePaths =  data.getStringArrayListExtra(AlbumActivity.SELECTED_RESULT);
+                mImagePaths = data.getStringArrayListExtra(ImgSelector.SELECTED_RESULT);
                 if (mImagePaths != null) {
                     mAdapter.notifyDataSetChanged();
+                    for (String mImagePath : mImagePaths) {
+                        KLog.d(mImagePath);
+                    }
                 }
             }
         }
@@ -76,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         public SelectedImgAdapter.ImgViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             ImageView imageView = new ImageView(MainActivity.this);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setLayoutParams(new GridLayoutManager.LayoutParams(parent.getWidth()/3,parent.getWidth()/3));
+            imageView.setLayoutParams(new GridLayoutManager.LayoutParams(parent.getWidth() / 3, parent.getWidth() / 3));
             return new ImgViewHolder(imageView);
         }
 

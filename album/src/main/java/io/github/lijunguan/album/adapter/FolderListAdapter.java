@@ -10,11 +10,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.github.lijunguan.album.R;
-import io.github.lijunguan.album.model.entity.AlbumFloder;
-import io.github.lijunguan.album.view.AlbumView;
+import io.github.lijunguan.album.model.entity.AlbumFolder;
+import io.github.lijunguan.album.ui.fragment.AlbumFragment;
+
+import static io.github.lijunguan.album.utils.CommonUtils.checkNotNull;
 
 /**
  * Created by lijunguan on 2016/4/13
@@ -23,22 +26,20 @@ import io.github.lijunguan.album.view.AlbumView;
  */
 public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.FolderViewHolder> {
 
-    private List<AlbumFloder> mData;
-
-    private AlbumView mAlbumView;
+    private List<AlbumFolder> mData;
 
     private int mSelectedIndex = 0;
 
     private Context mContext;
 
-    public FolderListAdapter(AlbumView albumView, List<AlbumFloder> mData) {
-        this.mData = mData;
-        this.mAlbumView = albumView;
-        if (albumView instanceof Context) {
-            mContext = (Context) mAlbumView;
-        }
+    private AlbumFragment.FolderItemListener mListener;
 
+    public FolderListAdapter(Context context, AlbumFragment.FolderItemListener listener) {
+        mContext = checkNotNull(context);
+        mListener = listener;
+        mData = new ArrayList<>();
     }
+
 
     @Override
     public FolderListAdapter.FolderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -49,7 +50,7 @@ public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.Fo
     @Override
     public void onBindViewHolder(final FolderListAdapter.FolderViewHolder holder, final int position) {
 
-        final AlbumFloder floder = mData.get(position);
+        final AlbumFolder floder = mData.get(position);
 
         Glide.with(mContext)
                 .load(floder.getCover().getPath())
@@ -60,7 +61,7 @@ public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.Fo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAlbumView.switchAlbumFolder(floder);
+                mListener.onFloderItemClick(floder);
                 holder.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.primary_light));
                 mSelectedIndex = position;
                 notifyDataSetChanged();
@@ -77,6 +78,11 @@ public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.Fo
     @Override
     public int getItemCount() {
         return mData.size();
+    }
+
+    public void setData(List<AlbumFolder> data) {
+        this.mData = checkNotNull(data);
+        notifyDataSetChanged();
     }
 
     static class FolderViewHolder extends RecyclerView.ViewHolder {
