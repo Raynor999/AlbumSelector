@@ -32,7 +32,6 @@ import io.github.lijunguan.album.base.BaseFragment;
 import io.github.lijunguan.album.model.entity.AlbumFolder;
 import io.github.lijunguan.album.model.entity.ImageInfo;
 import io.github.lijunguan.album.presenter_view.AlbumContract;
-import io.github.lijunguan.album.ui.activity.AlbumActivity;
 import io.github.lijunguan.album.ui.widget.GridDividerDecorator;
 import io.github.lijunguan.album.utils.ActivityUtils;
 import io.github.lijunguan.album.utils.FileUtils;
@@ -44,8 +43,10 @@ import static io.github.lijunguan.album.utils.CommonUtils.checkNotNull;
  * emial: lijunguan199210@gmail.com
  * blog: https://lijunguan.github.io
  */
-public class AlbumFragment extends BaseFragment implements AlbumContract.View, View.OnClickListener {
+public class AlbumFragment extends BaseFragment
+        implements AlbumContract.View, View.OnClickListener {
 
+    public static final String TAG = AlbumFragment.class.getSimpleName();
 
     private AlbumContract.Presenter mPresenter;
 
@@ -108,7 +109,7 @@ public class AlbumFragment extends BaseFragment implements AlbumContract.View, V
         }
 
         @Override
-        public void onSelectedImageClick(ImageInfo imageInfo, int maxCount, int position) {
+        public void onSelectedImageClick(@NonNull ImageInfo imageInfo, int maxCount, int position) {
             mPresenter.selectImage(imageInfo, maxCount, position);
         }
 
@@ -139,8 +140,8 @@ public class AlbumFragment extends BaseFragment implements AlbumContract.View, V
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         mPresenter.start(); //初始化数据
     }
 
@@ -244,26 +245,35 @@ public class AlbumFragment extends BaseFragment implements AlbumContract.View, V
     }
 
     @Override
-    public void restoreChecbox(int position) {
+    public void showOutOfRange(int position, CharSequence warningMSg) {
+        showToast(warningMSg);
+        //复原Checkbox的选择状态
         mImagesAdapter.notifyItemChanged(position);
     }
 
     @Override
     public void showSelectedCount(int count) {
-        if (mContext instanceof AlbumActivity) {
-            ((AlbumActivity) mContext).setSelectCount(count);
+        String text;
+        if (count > 0) {
+            text = getString(R.string.update_count, count, mAlbumConfig.getMaxCount());
+            mContext.setSubmitBtnText(text, true);
+        } else {
+            text = getString(R.string.btn_submit_text);
+            mContext.setSubmitBtnText(text, false);
         }
     }
 
     @Override
     public void showImageDetailUi(ImageInfo imageInfo) {
-        ImageDetailFragment fragment =
-                (ImageDetailFragment) mContext.getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        ImageDetailFragment fragment = (ImageDetailFragment) mContext
+                .getSupportFragmentManager()
+                .findFragmentByTag(ImageDetailFragment.TAG);
+
         if (fragment == null) {
-            fragment = ImageDetailFragment.newInstance(imageInfo);
+            fragment = ImageDetailFragment.newInstance(imageInfo, mAlbumConfig);
             ActivityUtils.addFragmentToActivity(mContext.getSupportFragmentManager(),
                     fragment,
-                    R.id.fragment_container,
+                    ImageDetailFragment.TAG,
                     true);
         }
         mContext.getSupportFragmentManager().beginTransaction().hide(this).commit();
@@ -272,6 +282,7 @@ public class AlbumFragment extends BaseFragment implements AlbumContract.View, V
 
     @Override
     public void selectComplete(List<String> imagePaths, boolean refreshMedia) {
+        checkNotNull(imagePaths);
         Intent data = new Intent();
         data.putStringArrayListExtra(ImgSelector.SELECTED_RESULT, (ArrayList<String>) imagePaths);
         // notify system ,保存拍照的照片到MediaStore,
@@ -308,5 +319,12 @@ public class AlbumFragment extends BaseFragment implements AlbumContract.View, V
 
     public interface FolderItemListener {
         void onFloderItemClick(AlbumFolder folder);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden) {
+            mContext.setToolbarTitle(getString(R.string.album_activitu_title));
+        }
     }
 }

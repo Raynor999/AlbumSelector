@@ -10,7 +10,7 @@
         android:supportsRtl="true">
         <activity
             android:name=".ui.activity.AlbumActivity"
-            android:label="@string/title_activity_album"
+            android:label="@string/album_activitu_title"
             android:theme="@style/AlbumTheme" />
     </application>
 

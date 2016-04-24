@@ -21,14 +21,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import io.github.lijunguan.album.R;
+
 import static io.github.lijunguan.album.utils.CommonUtils.checkNotNull;
 
 
 /**
- *  Created by lijunguan on 2016/4/21.
+ * Created by lijunguan on 2016/4/21.
  * emial: lijunguan199210@gmail.com
  * blog: https://lijunguan.github.io
- *提供方法帮助Activity加载它的UI
+ * 提供方法帮助Activity加载它的UI
  */
 public class ActivityUtils {
 
@@ -37,11 +39,11 @@ public class ActivityUtils {
      * 这个操作将会被{@code fragmentManager} 执行
      */
     public static void addFragmentToActivity(@NonNull FragmentManager fragmentManager,
-                                             @NonNull Fragment fragment, int frameId,boolean addToBackStack) {
+                                             @NonNull Fragment fragment, String tag, boolean addToBackStack) {
         checkNotNull(fragmentManager);
         checkNotNull(fragment);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(frameId, fragment);
+        transaction.add(R.id.fragment_container, fragment, tag);
         if (addToBackStack) {
             transaction.addToBackStack(null);
         }

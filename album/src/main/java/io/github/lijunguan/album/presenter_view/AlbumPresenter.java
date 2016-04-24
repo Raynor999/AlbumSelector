@@ -10,8 +10,8 @@ import java.util.List;
 
 import io.github.lijunguan.album.ImgSelector;
 import io.github.lijunguan.album.R;
-import io.github.lijunguan.album.model.AlbumModel;
-import io.github.lijunguan.album.model.AlbumModelImpl;
+import io.github.lijunguan.album.model.AlbumDataSource;
+import io.github.lijunguan.album.model.AlbumRepository;
 import io.github.lijunguan.album.model.entity.AlbumFolder;
 import io.github.lijunguan.album.model.entity.ImageInfo;
 
@@ -21,12 +21,14 @@ import static io.github.lijunguan.album.utils.CommonUtils.checkNotNull;
  * Created by lijunguan on 2016/4/21.
  * emial: lijunguan199210@gmail.com
  * blog: https://lijunguan.github.io
+ *
+ *
  */
 public class AlbumPresenter implements AlbumContract.Presenter {
 
     private AlbumContract.View mAlbumView;
 
-    private AlbumModel mAlbumModel;
+    private AlbumRepository mAlbumRepository;
 
     private LoaderManager mLoadManager;
 
@@ -37,8 +39,7 @@ public class AlbumPresenter implements AlbumContract.Presenter {
         mLoadManager = checkNotNull(loaderManager, "loader manager cannot be null");
         mAlbumView = checkNotNull(albumView, "albumView cannot be null");
         mContext = checkNotNull(context);
-        mAlbumModel = new AlbumModelImpl();
-
+        mAlbumRepository = AlbumRepository.getInstance();
         //为mAlbumView 设置Presenter
         mAlbumView.setPresenter(this);
 
@@ -46,17 +47,17 @@ public class AlbumPresenter implements AlbumContract.Presenter {
 
     @Override
     public void start() {
-        mAlbumModel.initImgRepository(mContext, mLoadManager, new AlbumModel.OnInitFinish() {
-            @Override
-            public void onFinsh(@NonNull List<ImageInfo> imageInfos) {
-                checkNotNull(imageInfos);
-                if (!imageInfos.isEmpty()) {
-                    mAlbumView.showImages(imageInfos);
-                } else {
-                    mAlbumView.showEmptyView();
-                }
 
-                mAlbumView.initFolderList(mAlbumModel.getFolders());
+        mAlbumRepository.initImgRepository(mContext, mLoadManager, new AlbumDataSource.LoadImagesCallback() {
+            @Override
+            public void onImagesLoaded(List<ImageInfo> images) {
+                mAlbumView.showImages(images);
+                mAlbumView.initFolderList(mAlbumRepository.getFolders());
+            }
+
+            @Override
+            public void onDataNoAvaliable() {
+                mAlbumView.showEmptyView();
             }
         });
     }
@@ -64,8 +65,8 @@ public class AlbumPresenter implements AlbumContract.Presenter {
     @Override
     public void result(int requestCode, int resultCode, File mTmpFile) {
         if (requestCode == ImgSelector.REQUEST_OPEN_CAMERA && resultCode == Activity.RESULT_OK) {
-            mAlbumModel.addSelect(mTmpFile.getAbsolutePath());
-            mAlbumView.selectComplete(mAlbumModel.getSelectedResult(), true);
+            mAlbumRepository.addSelect(mTmpFile.getAbsolutePath());
+            mAlbumView.selectComplete(mAlbumRepository.getSelectedResult(), true);
         } else {
             //出错时，删除零时文件,
             while (mTmpFile != null && mTmpFile.exists()) {
@@ -85,48 +86,43 @@ public class AlbumPresenter implements AlbumContract.Presenter {
     }
 
     @Override
-    public void selectImage(ImageInfo imageInfo, int maxCount, int position) {
+    public void selectImage(@NonNull ImageInfo imageInfo, int maxCount, int position) {
         checkNotNull(imageInfo, "ImageInfo cannot be null");
-        if (getSelectResult().size() >= maxCount) {
-            mAlbumView.showToast(mContext.getResources().getString(R.string.out_of_limit, maxCount));
-            mAlbumView.restoreChecbox(position);
+        if (mAlbumRepository.getSelectedResult().size() >= maxCount) {
+            mAlbumView.showOutOfRange(
+                    position,
+                    mContext.getResources().getString(R.string.out_of_limit, maxCount));
             return;
         }
         imageInfo.setSelected(true);
-        mAlbumModel.addSelect(imageInfo.getPath());
-        mAlbumView.showSelectedCount(mAlbumModel.getSelectedCount());
+        mAlbumRepository.addSelect(imageInfo.getPath());
+        mAlbumView.showSelectedCount(mAlbumRepository.getSelectedCount());
     }
 
     @Override
-    public void unSelectImage(ImageInfo imageInfo) {
+    public void unSelectImage(@NonNull ImageInfo imageInfo) {
         checkNotNull(imageInfo, "ImageInfo cannot be null");
         imageInfo.setSelected(false);
-        mAlbumModel.removeSelect(imageInfo.getPath());
-        mAlbumView.showSelectedCount(mAlbumModel.getSelectedCount());
+        mAlbumRepository.removeSelect(imageInfo.getPath());
+        mAlbumView.showSelectedCount(mAlbumRepository.getSelectedCount());
     }
 
     @Override
-    public void previewImage(ImageInfo imageInfo) {
+    public void previewImage(@NonNull ImageInfo imageInfo) {
         checkNotNull(imageInfo, "ImageInfo cannot be null");
         mAlbumView.showImageDetailUi(imageInfo);
     }
 
 
     @Override
-    public void commitSlection(List<String> selectResult) {
-        checkNotNull(selectResult);
-        mAlbumView.selectComplete(selectResult, false);
+    public void commitSlection() {
+        List<String> selectedResult = mAlbumRepository.getSelectedResult();
+        mAlbumView.selectComplete(selectedResult, false);
     }
 
     @Override
     public void openCamera() {
         mAlbumView.showSystemCamera();
     }
-
-    @Override
-    public List<String> getSelectResult() {
-        return mAlbumModel.getSelectedResult();
-    }
-
 
 }

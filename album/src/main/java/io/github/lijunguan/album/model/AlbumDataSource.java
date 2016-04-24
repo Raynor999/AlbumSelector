@@ -16,10 +16,10 @@ import io.github.lijunguan.album.model.entity.ImageInfo;
  * email: lijunguan199210@gmail.com
  * blog : https://lijunguan.github.io
  */
-public interface AlbumModel {
+public interface AlbumDataSource {
 
 
-    void initImgRepository(@NonNull Context context, @NonNull LoaderManager loaderManager, @NonNull OnInitFinish listener);
+    void initImgRepository(@NonNull Context context, @NonNull LoaderManager loaderManager, @NonNull LoadImagesCallback mCallback);
 
     @Nullable
     List<AlbumFolder> getFolders();
@@ -35,10 +35,13 @@ public interface AlbumModel {
 
     int getSelectedCount();
 
-    interface OnInitFinish {
-        void onFinsh(@NonNull List<ImageInfo> repository);
-    }
 
+    interface LoadImagesCallback {
+
+        void onImagesLoaded(List<ImageInfo> images);
+
+        void onDataNoAvaliable();
+    }
 
 }
 

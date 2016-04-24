@@ -13,7 +13,6 @@ import android.text.TextUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import io.github.lijunguan.album.R;
@@ -29,9 +28,11 @@ import static io.github.lijunguan.album.utils.CommonUtils.checkNotNull;
  * email: lijunguan199210@gmail.com
  * blog : https://lijunguan.github.io
  */
-public class AlbumModelImpl implements AlbumModel {
+public class AlbumRepository implements AlbumDataSource {
 
-    public static final String TAG = AlbumModelImpl.class.getSimpleName();
+    private static AlbumRepository INSTANCE = new AlbumRepository();
+
+    public static final String TAG = AlbumRepository.class.getSimpleName();
     /**
      * Loader的唯一ID号
      */
@@ -46,23 +47,27 @@ public class AlbumModelImpl implements AlbumModel {
             MediaStore.Images.Media.SIZE,
             MediaStore.Images.Media._ID};
 
-    private OnInitFinish mOnScanImageFinish;
-
-
     private List<AlbumFolder> mAlbumFolders;
     /**
      * 用户选择的图片路径集合
      */
     private List<String> mSelectedResult = new ArrayList<>();
 
+    public static AlbumRepository getInstance() {
+        return INSTANCE;
+    }
+
+    private AlbumRepository() {
+
+    }
 
     //非空注解，参数都不能为空
     @Override
     public void initImgRepository(@NonNull final Context context,
-                                  @NonNull LoaderManager loaderManager, @NonNull final OnInitFinish listener) {
+                                  @NonNull LoaderManager loaderManager, @NonNull final LoadImagesCallback callback) {
         checkNotNull(loaderManager);
-        mOnScanImageFinish = checkNotNull(listener);
-
+        checkNotNull(callback);
+        mSelectedResult.clear();
         LoaderManager.LoaderCallbacks imgLoadCallback = new LoaderManager.LoaderCallbacks<Cursor>() {
             @Override
             public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -79,8 +84,7 @@ public class AlbumModelImpl implements AlbumModel {
                 mAlbumFolders = new ArrayList<>();
                 if (data == null) return;
                 if (data.getCount() <= 0) {
-                    if (mOnScanImageFinish != null)
-                        mOnScanImageFinish.onFinsh(Collections.EMPTY_LIST);  //无图片返回EmptyList
+                    callback.onDataNoAvaliable();
                     return;
                 }
                 //创建包涵所有图片的相册目录
@@ -113,9 +117,8 @@ public class AlbumModelImpl implements AlbumModel {
                 KLog.i(TAG, "========nLoadFinished :" + mAlbumFolders.size());
                 allAlbumFolder.setCover(allAlbumFolder.getImgInfos().get(0));
 
-                if (mOnScanImageFinish != null) {
-                    mOnScanImageFinish.onFinsh(allAlbumFolder.getImgInfos());
-                }
+                callback.onImagesLoaded(allAlbumFolder.getImgInfos());
+
             }
 
 
@@ -141,15 +144,15 @@ public class AlbumModelImpl implements AlbumModel {
      * @return 如果mAlbumFloders集合中存在 改path路径的albumFolder则返回AlbumFloder ，否则返回null
      */
     private AlbumFolder getFloderByPath(String path) {
-        if (mAlbumFolders == null)
-            return null;
-
-        for (AlbumFolder floder : mAlbumFolders) {
-            if (TextUtils.equals(floder.getPath(), path)) {
-                return floder;
+        AlbumFolder folder = null;
+        if (mAlbumFolders != null) {
+            for (AlbumFolder floder : mAlbumFolders) {
+                if (TextUtils.equals(floder.getPath(), path)) {
+                    return floder;
+                }
             }
         }
-        return null;
+        return folder;
     }
 
 
@@ -163,13 +166,16 @@ public class AlbumModelImpl implements AlbumModel {
 
     @Override
     public AlbumFolder getFolderByImage(@NonNull ImageInfo imageInfo) {
-        if (imageInfo == null) return null;
-        for (AlbumFolder floder : mAlbumFolders) {
-            if (floder.getImgInfos().contains(imageInfo)) {
-                return floder;
+        AlbumFolder folder = null;
+        if (mAlbumFolders != null) {
+            for (int i = 1; i < mAlbumFolders.size(); i++) {
+                folder = mAlbumFolders.get(i);
+                if (folder.getImgInfos().contains(imageInfo)) {
+                    return folder;
+                }
             }
         }
-        return null;
+        return folder;
     }
 
     @Override

@@ -34,7 +34,7 @@ public class ImgSelector {
     public static final int MULTI_MODEL = 1;
 
 
-    private AlbumConfig mConfig;
+    private  AlbumConfig mConfig;
 
 
     private static ImgSelector ourInstance = new ImgSelector();

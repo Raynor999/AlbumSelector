@@ -52,13 +52,11 @@ public interface AlbumContract {
          */
         void swtichFloder(@NonNull AlbumFolder folder);
 
-        void previewImage(ImageInfo imageInfo);
+        void previewImage(@NonNull ImageInfo imageInfo);
 
-        void commitSlection(List<String> selectResult);
+        void commitSlection();
 
         void openCamera();
-
-        List<String> getSelectResult();
 
         /**
          * 系统相机Activity 返回结果    * {@link Activity#onActivityResult(int, int, Intent)}.

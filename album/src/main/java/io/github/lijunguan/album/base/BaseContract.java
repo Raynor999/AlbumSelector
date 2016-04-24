@@ -17,7 +17,7 @@ public interface BaseContract {
          */
         void setPresenter(T presenter);
 
-        void restoreChecbox(int position);
+        void showOutOfRange(int position, CharSequence warningMSg);
 
         void showSelectedCount(int count);
 

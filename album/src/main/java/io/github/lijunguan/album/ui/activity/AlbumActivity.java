@@ -7,8 +7,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.List;
-
 import io.github.lijunguan.album.AlbumConfig;
 import io.github.lijunguan.album.ImgSelector;
 import io.github.lijunguan.album.R;
@@ -20,6 +18,7 @@ import io.github.lijunguan.album.utils.KLog;
 
 
 public class AlbumActivity extends BaseActivity {
+
     public static final String TAG = AlbumActivity.class.getSimpleName();
 
     private AlbumPresenter mAlbumPresenter;
@@ -27,6 +26,7 @@ public class AlbumActivity extends BaseActivity {
     private Button mSubmitBtn;
 
     private AlbumConfig config;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class AlbumActivity extends BaseActivity {
         }
 
         AlbumFragment albumFragment =
-                (AlbumFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                (AlbumFragment) getSupportFragmentManager().findFragmentByTag(AlbumFragment.TAG);
 
         if (albumFragment == null) {
             //创建AlbumFragment
@@ -48,9 +48,8 @@ public class AlbumActivity extends BaseActivity {
                 config = new AlbumConfig();
             albumFragment = AlbumFragment.newInstance(config);
             ActivityUtils.addFragmentToActivity(
-                    getSupportFragmentManager(), albumFragment, R.id.fragment_container,false);
+                    getSupportFragmentManager(), albumFragment, AlbumFragment.TAG, false);
         }
-
         //创建AlbumPresenter
         mAlbumPresenter = new AlbumPresenter(
                 getApplicationContext(),
@@ -59,45 +58,51 @@ public class AlbumActivity extends BaseActivity {
     }
 
     private void initToolBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-        mSubmitBtn = (Button) toolbar.findViewById(R.id.btn_submit);
+        mSubmitBtn = (Button) mToolbar.findViewById(R.id.btn_submit);
         mSubmitBtn.setEnabled(false);
         mSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<String> selectResult = mAlbumPresenter.getSelectResult();
-                mAlbumPresenter.commitSlection(selectResult);
+                mAlbumPresenter.commitSlection();
             }
         });
     }
 
-    public void setSelectCount(int count) {
-        if (count > 0) {
-            mSubmitBtn.setText(getString(R.string.update_count, count, config.getMaxCount()));
-            mSubmitBtn.setEnabled(true);
-        } else {
-            mSubmitBtn.setText(getString(R.string.complete));
-            mSubmitBtn.setEnabled(false);
-        }
+
+    public void setSubmitBtnText(CharSequence text, boolean enabled) {
+        mSubmitBtn.setText(text);
+        mSubmitBtn.setEnabled(enabled);
     }
 
+    public void setToolbarTitle(CharSequence title) {
+        mToolbar.setTitle(title);
+    }
 
     @Override
     public void onBackPressed() {
-        KLog.d(TAG,"=======onBackPressed========");
+        KLog.d(TAG, "=======onBackPressed========");
         AlbumFragment albumFragment =
-                (AlbumFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        if (albumFragment != null) {
-            if (albumFragment.mFab.getVisibility() != View.VISIBLE) {
-                albumFragment.hideFolderList();
-            } else {
-                super.onBackPressed();
-            }
-        } else {
+                (AlbumFragment) getSupportFragmentManager().findFragmentByTag(AlbumFragment.TAG);
+
+        if (albumFragment == null) {
             super.onBackPressed();
+            return;
         }
+
+        if (albumFragment.isHidden()) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .show(albumFragment)
+                    .commit();
+        } else if (albumFragment.mFab.getVisibility() != View.VISIBLE) {
+            albumFragment.hideFolderList();
+            return;
+        }
+        super.onBackPressed();
+
     }
 }
