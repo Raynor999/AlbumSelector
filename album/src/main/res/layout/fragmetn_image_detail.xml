@@ -3,7 +3,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent">
 
-    <io.github.lijunguan.album.ui.widget.HackyViewPager
+    <io.github.lijunguan.imgselector.widget.HackyViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

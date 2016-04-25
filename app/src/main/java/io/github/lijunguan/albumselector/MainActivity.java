@@ -18,8 +18,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.github.lijunguan.album.ImgSelector;
-import io.github.lijunguan.album.utils.KLog;
+import io.github.lijunguan.imgselector.ImgSelector;
+import io.github.lijunguan.imgselector.utils.KLog;
 
 public class MainActivity extends AppCompatActivity {
     private static final int SELECT_IMAGE_REQUEST = 100;

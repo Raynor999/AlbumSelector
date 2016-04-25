@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.github.lijunguan.album">
+    package="io.github.lijunguan.imgselector">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -9,7 +9,7 @@
         android:allowBackup="true"
         android:supportsRtl="true">
         <activity
-            android:name=".ui.activity.AlbumActivity"
+            android:name=".MainActivity"
             android:label="@string/album_activitu_title"
             android:theme="@style/AlbumTheme" />
     </application>
