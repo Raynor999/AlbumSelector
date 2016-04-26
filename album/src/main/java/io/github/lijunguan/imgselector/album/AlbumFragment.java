@@ -24,15 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.lijunguan.imgselector.AlbumConfig;
-import io.github.lijunguan.imgselector.ImgSelector;
+import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.album.adapter.FolderListAdapter;
 import io.github.lijunguan.imgselector.album.adapter.ImageGridAdapter;
 import io.github.lijunguan.imgselector.base.BaseFragment;
+import io.github.lijunguan.imgselector.cropimage.CropActivity;
+import io.github.lijunguan.imgselector.cropimage.CropFragment;
 import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
 import io.github.lijunguan.imgselector.model.entity.ImageInfo;
-import io.github.lijunguan.imgselector.previewimage.ImageDetailFragment;
-import io.github.lijunguan.imgselector.widget.GridDividerDecorator;
+import io.github.lijunguan.imgselector.album.previewimage.ImageDetailFragment;
+import io.github.lijunguan.imgselector.album.widget.GridDividerDecorator;
 import io.github.lijunguan.imgselector.utils.ActivityUtils;
 import io.github.lijunguan.imgselector.utils.FileUtils;
 
@@ -83,7 +85,7 @@ public class AlbumFragment extends BaseFragment
 
     public static AlbumFragment newInstance(@NonNull AlbumConfig config) {
         Bundle args = new Bundle();
-        args.putParcelable(ImgSelector.ARG_ALBUM_CONFIG, config);
+        args.putParcelable(ImageSelector.ARG_ALBUM_CONFIG, config);
         AlbumFragment fragment = new AlbumFragment();
         fragment.setArguments(args);
         return fragment;
@@ -93,7 +95,7 @@ public class AlbumFragment extends BaseFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mAlbumConfig = getArguments().getParcelable(ImgSelector.ARG_ALBUM_CONFIG);
+            mAlbumConfig = getArguments().getParcelable(ImageSelector.ARG_ALBUM_CONFIG);
         }
         //改用接口监听 而不是让Adapter持有Presenter对象，
         // 1.更符合MVP架构 2.解决当程序处于后台，系统因资源不足杀死App后，复原时会先执行Fragment的onCreate()方法
@@ -124,9 +126,10 @@ public class AlbumFragment extends BaseFragment
 
         @Override
         public void onImageClick(int position, ImageInfo imageInfo, int selectModel) {
-            if (selectModel == ImgSelector.MULTI_MODEL) {
+            //根据选择模式，打开不同的UI
+            if (selectModel == ImageSelector.MULTI_MODE) {
                 mPresenter.previewImage(position);
-            } else if (selectModel == ImgSelector.SINGLE_MODEL) {
+            } else if (selectModel == ImageSelector.SINGLE_MODE) {
                 mPresenter.cropImage(imageInfo);
             }
         }
@@ -192,7 +195,7 @@ public class AlbumFragment extends BaseFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mPresenter.result(requestCode, resultCode, mTmpFile);
+        mPresenter.result(requestCode, resultCode, data,mTmpFile);
     }
 
 
@@ -238,7 +241,7 @@ public class AlbumFragment extends BaseFragment
             }
             if (mTmpFile != null && mTmpFile.exists()) {
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTmpFile));
-                startActivityForResult(cameraIntent, ImgSelector.REQUEST_OPEN_CAMERA);
+                startActivityForResult(cameraIntent, ImageSelector.REQUEST_OPEN_CAMERA);
             } else {
                 showToast(getString(R.string.img_error));
             }
@@ -292,14 +295,16 @@ public class AlbumFragment extends BaseFragment
 
     @Override
     public void showImageCropUi(ImageInfo imageInfo) {
-
+        Intent intent = new Intent(mContext, CropActivity.class);
+        intent.putExtra(CropFragment.ARG_IMAGE_INFO, imageInfo);
+        startActivityForResult(intent, ImageSelector.REQUEST_CROP_IMAGE);
     }
 
     @Override
     public void selectComplete(List<String> imagePaths, boolean refreshMedia) {
         checkNotNull(imagePaths);
         Intent data = new Intent();
-        data.putStringArrayListExtra(ImgSelector.SELECTED_RESULT, (ArrayList<String>) imagePaths);
+        data.putStringArrayListExtra(ImageSelector.SELECTED_RESULT, (ArrayList<String>) imagePaths);
         // notify system ,保存拍照的照片到MediaStore,
         if (refreshMedia) {
             mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(mTmpFile)));

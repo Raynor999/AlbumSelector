@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.widget;
+package io.github.lijunguan.imgselector.album.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;

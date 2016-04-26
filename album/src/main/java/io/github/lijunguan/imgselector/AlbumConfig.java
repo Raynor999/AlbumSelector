@@ -14,7 +14,7 @@ public class AlbumConfig implements Parcelable {
 
     public static final int DEFAULT_MAX_COUNT = 9;
     /**
-     * 选择模式， SINGLE_MODEL = 0 ，MULTI_MODEL = 1
+     * 选择模式， SINGLE_MODE = 0 ，MULTI_MODE = 1
      */
     private int mSelectModel;
     /**
@@ -67,7 +67,7 @@ public class AlbumConfig implements Parcelable {
     public AlbumConfig() {
         mMaxCount = DEFAULT_MAX_COUNT;
         mShownCamera = true;
-        mSelectModel = ImgSelector.MULTI_MODEL;
+        mSelectModel = ImageSelector.MULTI_MODE;
         mGridColumns = 3;
     }
 

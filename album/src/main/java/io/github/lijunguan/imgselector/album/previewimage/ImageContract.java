@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.previewimage;
+package io.github.lijunguan.imgselector.album.previewimage;
 
 import io.github.lijunguan.imgselector.base.BasePresenter;
 import io.github.lijunguan.imgselector.base.BaseView;

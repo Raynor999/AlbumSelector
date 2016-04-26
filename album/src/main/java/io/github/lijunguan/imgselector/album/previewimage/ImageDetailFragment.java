@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.previewimage;
+package io.github.lijunguan.imgselector.album.previewimage;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.lijunguan.imgselector.AlbumConfig;
-import io.github.lijunguan.imgselector.ImgSelector;
+import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.base.BaseFragment;
 import io.github.lijunguan.imgselector.model.entity.ImageInfo;
@@ -56,7 +56,7 @@ public class ImageDetailFragment extends BaseFragment
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_IMAGE_LIST, imageInfos);
         args.putInt(ARG_CURRENT_POSITION, currentPosition);
-        args.putParcelable(ImgSelector.ARG_ALBUM_CONFIG, albumConfig);
+        args.putParcelable(ImageSelector.ARG_ALBUM_CONFIG, albumConfig);
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,7 +67,7 @@ public class ImageDetailFragment extends BaseFragment
         if (getArguments() != null) {
             mImageInfos = getArguments().getParcelableArrayList(ARG_IMAGE_LIST);
             mCurrentPosition = getArguments().getInt(ARG_CURRENT_POSITION);
-            mAlbumConfig = getArguments().getParcelable(ImgSelector.ARG_ALBUM_CONFIG);
+            mAlbumConfig = getArguments().getParcelable(ImageSelector.ARG_ALBUM_CONFIG);
         }
         mPresenter = new ImageDetailPresenter(this);
         mPagerAdapter = new ImageDetailAdapter(mImageInfos);

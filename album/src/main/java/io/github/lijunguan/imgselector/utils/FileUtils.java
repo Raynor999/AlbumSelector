@@ -36,6 +36,7 @@ public class FileUtils {
     }
 
 
+
     private static final String EXTERNAL_STORAGE_PERMISSION = "android.permission.WRITE_EXTERNAL_STORAGE";
 
     /**

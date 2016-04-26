@@ -9,9 +9,11 @@
         android:allowBackup="true"
         android:supportsRtl="true">
         <activity
-            android:name=".MainActivity"
+            android:name=".album.AlbumActivity"
             android:label="@string/album_activitu_title"
             android:theme="@style/AlbumTheme" />
+
+        <activity android:name=".cropimage.CropActivity"  android:theme="@style/AlbumTheme" />
     </application>
 
 </manifest>

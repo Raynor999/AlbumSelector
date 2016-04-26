@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.github.lijunguan.imgselector.AlbumConfig;
-import io.github.lijunguan.imgselector.ImgSelector;
+import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.model.entity.ImageInfo;
 import io.github.lijunguan.imgselector.album.AlbumFragment;
@@ -85,7 +85,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             final ImageViewHolder imgHolder = (ImageViewHolder) holder;
             final ImageInfo imageInfo = getItem(position);
 
-            if (mAlbumConfig.getSelectModel() == ImgSelector.MULTI_MODEL) {
+            if (mAlbumConfig.getSelectModel() == ImageSelector.MULTI_MODE) {
                 //这里使用CheckBox的OnClickListener监听,而不是OnCheckedChangeListener ,当调用CheckBox的CheckBox.setChecked（）
                 //方法时又会触发OnCheckedChangeListener监听，加上VieHolder缓存服用， 问题简直不能更多！！！  用OnClickListener巧妙解决
                 imgHolder.mCheckBox.setOnClickListener(new View.OnClickListener() {
@@ -103,19 +103,20 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 imgHolder.mCheckBox.setChecked(imageInfo.isSelected());
                 imgHolder.mMaskView.setVisibility(imageInfo.isSelected() ? View.VISIBLE : View.GONE);
 
-            } else if (mAlbumConfig.getSelectModel() == ImgSelector.SINGLE_MODEL) {
+            } else if (mAlbumConfig.getSelectModel() == ImageSelector.AVATOR_MODE) {
                 imgHolder.mCheckBox.setVisibility(View.GONE);
             }
 
             imgHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //得到图片在集合中真正的position
+
                     int realPositon = holder.getAdapterPosition();
+                    //得到图片在集合中真正的 position
                     if (mAlbumConfig.isShownCamera()) {
                         realPositon--;
                     }
-                    mListener.onImageClick(realPositon,imageInfo, mAlbumConfig.getSelectModel());
+                    mListener.onImageClick(realPositon, imageInfo, mAlbumConfig.getSelectModel());
                 }
             });
 

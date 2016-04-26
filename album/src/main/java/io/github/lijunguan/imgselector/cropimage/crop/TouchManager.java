@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.lijunguan.imgselector.widget.crop;
+package io.github.lijunguan.imgselector.cropimage.crop;
 
 import android.annotation.TargetApi;
 import android.graphics.Matrix;

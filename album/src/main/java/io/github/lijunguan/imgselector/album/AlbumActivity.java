@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector;
+package io.github.lijunguan.imgselector.album;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,17 +7,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
-import io.github.lijunguan.imgselector.album.AlbumFragment;
-import io.github.lijunguan.imgselector.album.AlbumPresenter;
+import io.github.lijunguan.imgselector.AlbumConfig;
+import io.github.lijunguan.imgselector.ImageSelector;
+import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.base.BaseActivity;
-import io.github.lijunguan.imgselector.previewimage.ImageDetailFragment;
+import io.github.lijunguan.imgselector.album.previewimage.ImageDetailFragment;
 import io.github.lijunguan.imgselector.utils.ActivityUtils;
 import io.github.lijunguan.imgselector.utils.KLog;
 
 
-public class MainActivity extends BaseActivity {
+public class AlbumActivity extends BaseActivity {
 
-    public static final String TAG = MainActivity.class.getSimpleName();
+    public static final String TAG = AlbumActivity.class.getSimpleName();
 
     private AlbumPresenter mAlbumPresenter;
 
@@ -35,7 +36,7 @@ public class MainActivity extends BaseActivity {
         config = null;
         if (getIntent() != null) { //得到用户传入的配置
             config = getIntent()
-                    .getParcelableExtra(ImgSelector.ARG_ALBUM_CONFIG);
+                    .getParcelableExtra(ImageSelector.ARG_ALBUM_CONFIG);
         }
 
         AlbumFragment albumFragment;
@@ -81,7 +82,7 @@ public class MainActivity extends BaseActivity {
         mSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAlbumPresenter.commitSlection();
+                mAlbumPresenter.returnResult();
             }
         });
     }

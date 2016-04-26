@@ -27,7 +27,7 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="5dp"
-            android:text="完成"
+            android:text="@string/btn_submit_text"
             android:textColor="@color/text"
             android:textSize="14sp" />
 

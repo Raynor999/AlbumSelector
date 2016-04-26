@@ -8,7 +8,7 @@ import android.view.View;
 
 import java.lang.ref.WeakReference;
 
-import io.github.lijunguan.imgselector.MainActivity;
+import io.github.lijunguan.imgselector.album.AlbumActivity;
 import io.github.lijunguan.imgselector.utils.KLog;
 
 /**
@@ -22,16 +22,16 @@ public class BaseFragment extends Fragment {
 
     public static final String TAG = "life_cycle";
 
-    protected MainActivity mContext;
+    protected AlbumActivity mContext;
 
-    private WeakReference<MainActivity> mActivityRef;
+    private WeakReference<AlbumActivity> mActivityRef;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         //在Fragment中用 弱引用的方式持有一份Activity 引用，方便在Fragment中使用Context
-        if (context instanceof MainActivity) {
-            mActivityRef = new WeakReference<>((MainActivity) getActivity());
+        if (context instanceof AlbumActivity) {
+            mActivityRef = new WeakReference<>((AlbumActivity) getActivity());
             mContext = mActivityRef.get();
         } else {
             throw new IllegalArgumentException("unexcepted context ");

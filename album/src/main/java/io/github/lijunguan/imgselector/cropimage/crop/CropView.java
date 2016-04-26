@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.lijunguan.imgselector.widget.crop;
+package io.github.lijunguan.imgselector.cropimage.crop;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,6 +21,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
@@ -31,14 +32,19 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.Future;
+
+import static io.github.lijunguan.imgselector.utils.CommonUtils.checkArgument;
+import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
 
 /**
  * An {@link ImageView} with a fixed viewport and cropping capabilities.
  */
 public class CropView extends ImageView {
-
+    public static final String TAG = "CropView";
     private static final int MAX_TOUCH_POINTS = 2;
     private TouchManager touchManager;
 
@@ -47,7 +53,6 @@ public class CropView extends ImageView {
 
     private Bitmap bitmap;
     private Matrix transform = new Matrix();
-
 
 
     public CropView(Context context) {
@@ -156,7 +161,7 @@ public class CropView extends ImageView {
             BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
             bitmap = bitmapDrawable.getBitmap();
         } else if (drawable != null) {
-            bitmap = Utils.asBitmap(drawable, getWidth(), getHeight());
+            bitmap = asBitmap(drawable, getWidth(), getHeight());
         } else {
             bitmap = null;
         }
@@ -164,6 +169,17 @@ public class CropView extends ImageView {
         setImageBitmap(bitmap);
     }
 
+    public Bitmap asBitmap(Drawable drawable, int minWidth, int minHeight) {
+        final Rect tmpRect = new Rect();
+        drawable.copyBounds(tmpRect);
+        if (tmpRect.isEmpty()) {
+            tmpRect.set(0, 0, Math.max(minWidth, drawable.getIntrinsicWidth()), Math.max(minHeight, drawable.getIntrinsicHeight()));
+            drawable.setBounds(tmpRect);
+        }
+        Bitmap bitmap = Bitmap.createBitmap(tmpRect.width(), tmpRect.height(), Bitmap.Config.ARGB_8888);
+        drawable.draw(new Canvas(bitmap));
+        return bitmap;
+    }
 
     @Override
     public void setImageBitmap(@Nullable Bitmap bitmap) {
@@ -259,8 +275,8 @@ public class CropView extends ImageView {
         private Bitmap.CompressFormat format = Bitmap.CompressFormat.JPEG;
         private int quality = CropViewConfig.DEFAULT_IMAGE_QUALITY;
 
-        CropRequest(@NonNull CropView cropView) {
-            Utils.checkNotNull(cropView, "cropView == null");
+        public CropRequest(@NonNull CropView cropView) {
+            checkNotNull(cropView, "cropView == null");
             this.cropView = cropView;
         }
 
@@ -270,7 +286,7 @@ public class CropView extends ImageView {
          * @return current request for chaining.
          */
         public CropRequest format(@NonNull Bitmap.CompressFormat format) {
-            Utils.checkNotNull(format, "format == null");
+            checkNotNull(format, "format == null");
             this.format = format;
             return this;
         }
@@ -281,33 +297,48 @@ public class CropView extends ImageView {
          * @return current request for chaining.
          */
         public CropRequest quality(int quality) {
-            Utils.checkArg(quality >= 0 && quality <= 100, "quality must be 0..100");
+            checkArgument(quality >= 0 && quality <= 100, "quality must be 0..100");
             this.quality = quality;
             return this;
         }
 
+
+        //TODO 有必要的话 采用Callable + Future (将此方法在非主线程中执行)
+
         /**
-         * Asynchronously flush cropped bitmap into provided file, creating parent directory if required. This is performed in another
-         * thread.
+         * 同步地将裁剪后的bitmap 写入到提供的file中，  如果需要会创建父目录
          *
          * @param file Must have permissions to write, will be created if doesn't exist or overwrite if it does.
          * @return {@link Future} used to cancel or wait for this request.
          */
-        public Future<Void> into(@NonNull File file) {
+        public void into(@NonNull File file) throws IOException {
             final Bitmap croppedBitmap = cropView.crop();
-            return Utils.flushToFile(croppedBitmap, format, quality, file);
+            flushToFile(croppedBitmap, format, quality, file);
         }
 
-        /**
-         * Asynchronously flush cropped bitmap into provided stream.
-         *
-         * @param outputStream  Stream to write to
-         * @param closeWhenDone wetter or not to close provided stream once flushing is done
-         * @return {@link Future} used to cancel or wait for this request.
-         */
-        public Future<Void> into(@NonNull OutputStream outputStream, boolean closeWhenDone) {
-            final Bitmap croppedBitmap = cropView.crop();
-            return Utils.flushToStream(croppedBitmap, format, quality, outputStream, closeWhenDone);
+        private void flushToFile(final Bitmap bitmap,
+                                 final Bitmap.CompressFormat format,
+                                 final int quality,
+                                 final File file) throws IOException {
+
+            OutputStream outputStream = null;
+            try {
+                file.getParentFile().mkdirs();
+                outputStream = new FileOutputStream(file);
+                bitmap.compress(format, quality, outputStream);
+                outputStream.flush();
+            } finally {
+
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
         }
     }
 

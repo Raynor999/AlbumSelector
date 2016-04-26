@@ -2,13 +2,15 @@ package io.github.lijunguan.imgselector.album;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 
 import java.io.File;
 import java.util.List;
 
-import io.github.lijunguan.imgselector.ImgSelector;
+import io.github.lijunguan.imgselector.ImageSelector;
+import io.github.lijunguan.imgselector.cropimage.CropActivity;
 import io.github.lijunguan.imgselector.model.AlbumDataSource;
 import io.github.lijunguan.imgselector.model.AlbumRepository;
 import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
@@ -60,19 +62,32 @@ public class AlbumPresenter implements AlbumContract.Presenter {
     }
 
     @Override
-    public void result(int requestCode, int resultCode, File mTmpFile) {
-        if (requestCode == ImgSelector.REQUEST_OPEN_CAMERA && resultCode == Activity.RESULT_OK) {
-            mAlbumRepository.addSelect(mTmpFile.getAbsolutePath());
-            mAlbumView.selectComplete(mAlbumRepository.getSelectedResult(), true);
-        } else {
-            //出错时，删除零时文件,
-            while (mTmpFile != null && mTmpFile.exists()) {
-                boolean success = mTmpFile.delete();
-                if (success) {
-                    mTmpFile = null;
+    public void result(int requestCode, int resultCode, Intent data, File mTmpFile) {
+
+        switch (requestCode) {
+            case ImageSelector.REQUEST_OPEN_CAMERA:
+                if (resultCode == Activity.RESULT_OK) {
+                    mAlbumRepository.addSelect(mTmpFile.getAbsolutePath());
+                    mAlbumView.selectComplete(mAlbumRepository.getSelectedResult(), true);
+                } else {
+                    //出错时，删除零时文件,
+                    while (mTmpFile != null && mTmpFile.exists()) {
+                        boolean success = mTmpFile.delete();
+                        if (success) {
+                            mTmpFile = null;
+                        }
+                    }
                 }
-            }
+                break;
+            case ImageSelector.REQUEST_CROP_IMAGE:
+                if (resultCode == Activity.RESULT_OK) {
+                    String path = data.getStringExtra(CropActivity.CROP_RESULT);
+                    mAlbumRepository.addSelect(path);
+                    mAlbumView.selectComplete(mAlbumRepository.getSelectedResult(), true);
+                }
+                break;
         }
+
     }
 
     @Override
@@ -110,11 +125,12 @@ public class AlbumPresenter implements AlbumContract.Presenter {
 
     @Override
     public void cropImage(ImageInfo imageInfo) {
+        checkNotNull(imageInfo);
         mAlbumView.showImageCropUi(imageInfo);
     }
 
     @Override
-    public void commitSlection() {
+    public void returnResult() {
         List<String> selectedResult = mAlbumRepository.getSelectedResult();
         mAlbumView.selectComplete(selectedResult, false);
     }

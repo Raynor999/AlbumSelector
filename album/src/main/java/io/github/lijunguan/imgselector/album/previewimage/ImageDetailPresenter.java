@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.previewimage;
+package io.github.lijunguan.imgselector.album.previewimage;
 
 import android.support.annotation.NonNull;
 
@@ -31,6 +31,8 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
 //        int index = folder.getImgInfos().indexOf(mImageInfo);
 //        mImageDetailView.showImageDetail(index, folder.getImgInfos());
     }
+
+
 
     @Override
     public void selectImage(@NonNull ImageInfo imageInfo, int maxCount, int position) {

@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import java.io.File;
 import java.util.List;
 
-import io.github.lijunguan.imgselector.previewimage.ImageContract;
+import io.github.lijunguan.imgselector.album.previewimage.ImageContract;
 import io.github.lijunguan.imgselector.base.BaseView;
 import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
 import io.github.lijunguan.imgselector.model.entity.ImageInfo;
@@ -26,7 +26,7 @@ public interface AlbumContract {
 
         void showEmptyView();
 
-        void showImages(List<ImageInfo> imageInfos);
+        void showImages(@NonNull List<ImageInfo> imageInfos);
 
         void showSystemCamera();
 
@@ -36,20 +36,22 @@ public interface AlbumContract {
 
         void initFolderList(List<AlbumFolder> folders);
 
-        void showImageDetailUi(int currentPosition);
+        void showImageDetailUi(int currentPosition); // 打开ImagedetailFragment
 
-        void showOutOfRange(int position);
+        void showImageCropUi(@NonNull ImageInfo imageInfo);// 启动裁剪图片的Activity
+
+        void showOutOfRange(int position); //提示用户图片选择数量已经达到上限
 
         void showSelectedCount(int count);
         /**
-         * 图片选择完成，
-         *
+         * 图片选择完成，返回选择数据给等待结果的Activity，
+         * 根据refreshMedia状态判断是否将相机拍摄或裁剪的图片加入媒体库
          * @param imagePaths   选择的图片路径集合
          * @param refreshMedia 是否刷新系统媒体库 true 将通过相机拍摄的照片加入Media.Store
          */
         void selectComplete(List<String> imagePaths, boolean refreshMedia);
 
-        void showImageCropUi(ImageInfo imageInfo);
+
 
     }
 
@@ -65,18 +67,17 @@ public interface AlbumContract {
 
         void cropImage(ImageInfo imageInfo);
 
-        void commitSlection();
+        /**
+         * 将用户选择的图片结果返回
+         */
+        void returnResult();
 
         void openCamera();
-
         /**
          * 系统相机Activity 返回结果    * {@link Activity#onActivityResult(int, int, Intent)}.
-         *
-         * @param requestCode 请求码
-         * @param resultCode  请求结果码
          * @param mTmpFile    保存相机拍摄图片的零时文件
          */
-        void result(int requestCode, int resultCode, File mTmpFile);
+        void result(int requestCode, int resultCode, Intent data, File mTmpFile);
     }
 
 }

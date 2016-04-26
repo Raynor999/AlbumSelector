@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import io.github.lijunguan.imgselector.album.AlbumActivity;
+
 import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
 
 /**
@@ -12,60 +14,76 @@ import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
  * emial: lijunguan199210@gmail.com
  * blog: https://lijunguan.github.io
  */
-public class ImgSelector {
+public class ImageSelector {
 
 
     public static final String SELECTED_RESULT = "selected_result";
 
-    public static final int REQUEST_SELECT_IMAGE = 1024;
+    public static final int REQUEST_SELECT_IMAGE = 0x1024;
 
-    public static final int REQUEST_OPEN_CAMERA = 2048;
+    public static final int REQUEST_OPEN_CAMERA = 0x2048;
+
+    public static final int REQUEST_CROP_IMAGE = 0x4096;
 
     public static final String ARG_ALBUM_CONFIG = "albumConfig";
     /**
      * 单选模式
      */
-    public static final int SINGLE_MODEL = 0;
+    @Deprecated
+    public static final int SINGLE_MODE = 0;
+
+    /**
+     * 头像选择模式 得到裁剪后的正方形图片
+     */
+    public static final int AVATOR_MODE = 0;
     /**
      * 多选模式
      */
-    public static final int MULTI_MODEL = 1;
+    public static final int MULTI_MODE = 1;
+
+    ;
 
 
-    private  AlbumConfig mConfig;
+    private AlbumConfig mConfig;
 
 
-    private static ImgSelector ourInstance = new ImgSelector();
+    private static ImageSelector ourInstance = new ImageSelector();
 
-    public static ImgSelector getInstance() {
+    public static ImageSelector getInstance() {
         return ourInstance;
     }
 
-    private ImgSelector() {
+    private ImageSelector() {
         mConfig = new AlbumConfig();
     }
 
-    public ImgSelector setMaxCount(@NonNull int maxCount) {
+    public ImageSelector setMaxCount(@NonNull int maxCount) {
         checkNotNull(maxCount);
         mConfig.setMaxCount(maxCount);
         return this;
     }
 
-    public ImgSelector setSelectModel(@NonNull int model) {
+    public ImageSelector setSelectModel(@NonNull int model) {
         checkNotNull(model);
         mConfig.setSelectModel(model);
         return this;
     }
 
-    public ImgSelector setShowCamera(@NonNull boolean shown) {
+    public ImageSelector setShowCamera(@NonNull boolean shown) {
         checkNotNull(shown);
         mConfig.setShownCamera(shown);
         return this;
     }
 
+    public ImageSelector setGridColumns(@NonNull int columns) {
+        checkNotNull(columns);
+        mConfig.setGridColumns(columns);
+        return this;
+    }
+
     public void startSelect(@NonNull Activity context) {
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra(ImgSelector.ARG_ALBUM_CONFIG, mConfig);
+        Intent intent = new Intent(context, AlbumActivity.class);
+        intent.putExtra(ImageSelector.ARG_ALBUM_CONFIG, mConfig);
         context.startActivityForResult(intent, REQUEST_SELECT_IMAGE);
     }
 
