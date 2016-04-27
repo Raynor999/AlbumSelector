@@ -10,6 +10,6 @@
     <color name="secondary_text">#727272</color>
     <color name="text">#FFFFFFFF</color>
     <color name="divider">#B6B6B6</color>
-
+    <color name="background">#fffafafa</color>
     <color name="mask_color">#88000000</color>
 </resources>

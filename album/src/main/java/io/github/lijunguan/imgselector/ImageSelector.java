@@ -3,6 +3,7 @@ package io.github.lijunguan.imgselector;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 
 import io.github.lijunguan.imgselector.album.AlbumActivity;
@@ -30,19 +31,16 @@ public class ImageSelector {
      * 单选模式
      */
     @Deprecated
-    public static final int SINGLE_MODE = 0;
+    public static final int SINGLE_MODE = 0x0;
 
     /**
      * 头像选择模式 得到裁剪后的正方形图片
      */
-    public static final int AVATOR_MODE = 0;
+    public static final int AVATOR_MODE = 0x0;
     /**
      * 多选模式
      */
-    public static final int MULTI_MODE = 1;
-
-    ;
-
+    public static final int MULTI_MODE = 0x1;
 
     private AlbumConfig mConfig;
 
@@ -53,31 +51,41 @@ public class ImageSelector {
         return ourInstance;
     }
 
+    public AlbumConfig getConfig() {
+        return mConfig;
+    }
+
     private ImageSelector() {
         mConfig = new AlbumConfig();
     }
 
-    public ImageSelector setMaxCount(@NonNull int maxCount) {
+    public ImageSelector setMaxCount(int maxCount) {
         checkNotNull(maxCount);
         mConfig.setMaxCount(maxCount);
         return this;
     }
 
-    public ImageSelector setSelectModel(@NonNull int model) {
+    public ImageSelector setSelectModel(int model) {
         checkNotNull(model);
         mConfig.setSelectModel(model);
         return this;
     }
 
-    public ImageSelector setShowCamera(@NonNull boolean shown) {
+    public ImageSelector setShowCamera(boolean shown) {
         checkNotNull(shown);
         mConfig.setShownCamera(shown);
         return this;
     }
 
-    public ImageSelector setGridColumns(@NonNull int columns) {
+    public ImageSelector setGridColumns(int columns) {
         checkNotNull(columns);
         mConfig.setGridColumns(columns);
+        return this;
+    }
+
+    public ImageSelector setToolbarColor(@ColorInt int toolbarColor) {
+        checkNotNull(toolbarColor);
+        mConfig.setToolbarColor(toolbarColor);
         return this;
     }
 

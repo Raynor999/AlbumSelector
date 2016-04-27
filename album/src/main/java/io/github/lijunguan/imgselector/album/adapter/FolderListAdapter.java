@@ -1,6 +1,7 @@
 package io.github.lijunguan.imgselector.album.adapter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,16 +63,16 @@ public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.Fo
             @Override
             public void onClick(View v) {
                 mListener.onFloderItemClick(floder);
-                holder.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.primary_light));
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.primary_light));
                 mSelectedIndex = holder.getAdapterPosition();
                 notifyDataSetChanged();
             }
         });
 
         if (mSelectedIndex == position) {
-            holder.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.primary_light));
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.primary_light));
         } else {
-            holder.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.material_grey_50));
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background));
         }
     }
 

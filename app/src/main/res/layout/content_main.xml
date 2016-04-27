@@ -114,14 +114,61 @@
 
             </android.support.design.widget.TextInputLayout>
 
+
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <RadioGroup
+            android:id="@+id/radio_group_toolbar_color"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="5dp">
 
-        </android.support.v7.widget.RecyclerView>
+
+            <RadioButton
+                android:id="@+id/radio_red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="红"
+                android:textAppearance="?android:textAppearanceMedium" />
+
+            <RadioButton
+                android:id="@+id/radio_green"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="绿"
+                android:textAppearance="?android:textAppearanceMedium" />
+
+            <RadioButton
+                android:id="@+id/radio_blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="蓝"
+                android:textAppearance="?android:textAppearanceMedium" />
+
+            <RadioButton
+                android:id="@+id/radio_orange"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="橘色"
+                android:textAppearance="?android:textAppearanceMedium" />
+
+        </RadioGroup>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_rounded_rectangle"
+            android:padding="5dp">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
+        </FrameLayout>
     </LinearLayout>
 
 

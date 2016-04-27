@@ -19,9 +19,7 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
 
 
     public ImageDetailPresenter(ImageContract.View imageDetailView) {
-
         mImageDetailView = imageDetailView;
-
         mAlbumRepository = AlbumRepository.getInstance();
         mImageDetailView.setPresenter(this);
     }

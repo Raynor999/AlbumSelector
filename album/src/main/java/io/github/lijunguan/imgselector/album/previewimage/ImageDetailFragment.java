@@ -51,12 +51,11 @@ public class ImageDetailFragment extends BaseFragment
 
     private ImageDetailAdapter mPagerAdapter;
 
-    public static ImageDetailFragment newInstance(ArrayList<ImageInfo> imageInfos, int currentPosition, AlbumConfig albumConfig) {
+    public static ImageDetailFragment newInstance(ArrayList<ImageInfo> imageInfos, int currentPosition) {
         ImageDetailFragment fragment = new ImageDetailFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_IMAGE_LIST, imageInfos);
         args.putInt(ARG_CURRENT_POSITION, currentPosition);
-        args.putParcelable(ImageSelector.ARG_ALBUM_CONFIG, albumConfig);
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,8 +66,8 @@ public class ImageDetailFragment extends BaseFragment
         if (getArguments() != null) {
             mImageInfos = getArguments().getParcelableArrayList(ARG_IMAGE_LIST);
             mCurrentPosition = getArguments().getInt(ARG_CURRENT_POSITION);
-            mAlbumConfig = getArguments().getParcelable(ImageSelector.ARG_ALBUM_CONFIG);
         }
+        mAlbumConfig = ImageSelector.getInstance().getConfig();
         mPresenter = new ImageDetailPresenter(this);
         mPagerAdapter = new ImageDetailAdapter(mImageInfos);
     }
@@ -92,29 +91,18 @@ public class ImageDetailFragment extends BaseFragment
         });
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setCurrentItem(mCurrentPosition);
-        updateIndicator();
         mViewPager.addOnPageChangeListener(onPageChangeListener);
+        mCheckBox.setChecked(mImageInfos.get(mCurrentPosition).isSelected());
+        updateIndicator();
         return rootView;
     }
 
-    private ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener()
-
-    {
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-        }
-
+    private ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
         @Override
         public void onPageSelected(int position) {
             ImageInfo item = mPagerAdapter.getItem(position);
             mCheckBox.setChecked(item.isSelected());
             updateIndicator();
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-
         }
     };
 

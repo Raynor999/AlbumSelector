@@ -2,6 +2,7 @@ package io.github.lijunguan.imgselector;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.ColorInt;
 
 /**
  * Created by lijunguan on 2016/4/21.
@@ -30,6 +31,9 @@ public class AlbumConfig implements Parcelable {
      * grid 的列数
      */
     private int mGridColumns;
+
+    @ColorInt
+    private int mToolbarColor = -1;
 
 
     public int getSelectModel() {
@@ -64,12 +68,21 @@ public class AlbumConfig implements Parcelable {
         this.mGridColumns = mGridColumns;
     }
 
+    public int getToolbarColor() {
+        return mToolbarColor;
+    }
+
+    public void setToolbarColor(@ColorInt int mToolbarColor) {
+        this.mToolbarColor = mToolbarColor;
+    }
+
     public AlbumConfig() {
         mMaxCount = DEFAULT_MAX_COUNT;
         mShownCamera = true;
         mSelectModel = ImageSelector.MULTI_MODE;
         mGridColumns = 3;
     }
+
 
     @Override
     public int describeContents() {
@@ -82,6 +95,7 @@ public class AlbumConfig implements Parcelable {
         dest.writeInt(this.mMaxCount);
         dest.writeByte(mShownCamera ? (byte) 1 : (byte) 0);
         dest.writeInt(this.mGridColumns);
+        dest.writeInt(this.mToolbarColor);
     }
 
     protected AlbumConfig(Parcel in) {
@@ -89,6 +103,7 @@ public class AlbumConfig implements Parcelable {
         this.mMaxCount = in.readInt();
         this.mShownCamera = in.readByte() != 0;
         this.mGridColumns = in.readInt();
+        this.mToolbarColor = in.readInt();
     }
 
     public static final Creator<AlbumConfig> CREATOR = new Creator<AlbumConfig>() {

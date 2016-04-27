@@ -4,4 +4,5 @@
     android:id="@+id/crop_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:ViewportOverlayPadding="8dp" />
+    app:ViewportOverlayPadding="8dp"
+    app:ViewportRatio="1.0" />

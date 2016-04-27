@@ -38,7 +38,7 @@ public interface AlbumContract {
 
         void showImageDetailUi(int currentPosition); // 打开ImagedetailFragment
 
-        void showImageCropUi(@NonNull ImageInfo imageInfo);// 启动裁剪图片的Activity
+        void showImageCropUi(@NonNull String  imagePath);// 启动裁剪图片的Activity
 
         void showOutOfRange(int position); //提示用户图片选择数量已经达到上限
 

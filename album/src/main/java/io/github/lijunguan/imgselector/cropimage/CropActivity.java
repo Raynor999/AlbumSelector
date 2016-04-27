@@ -7,7 +7,6 @@ import android.view.View;
 
 import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.base.BaseActivity;
-import io.github.lijunguan.imgselector.model.entity.ImageInfo;
 import io.github.lijunguan.imgselector.utils.ActivityUtils;
 
 /**
@@ -25,10 +24,9 @@ public class CropActivity extends BaseActivity implements CropFragment.CropImage
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crop);
-
         if (savedInstanceState == null) {
-            ImageInfo imageInfo = getIntent().getParcelableExtra(CropFragment.ARG_IMAGE_INFO);
-            mCropFragment = CropFragment.newInstance(imageInfo);
+            String iamgePath = getIntent().getStringExtra(CropFragment.ARG_IMAGE_PATH);
+            mCropFragment = CropFragment.newInstance(iamgePath);
             ActivityUtils.addFragmentToActivity(
                     getSupportFragmentManager(),
                     mCropFragment,
@@ -45,6 +43,7 @@ public class CropActivity extends BaseActivity implements CropFragment.CropImage
             }
         });
     }
+
 
 
     @Override

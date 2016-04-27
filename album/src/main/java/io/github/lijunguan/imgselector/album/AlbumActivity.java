@@ -2,16 +2,12 @@ package io.github.lijunguan.imgselector.album;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
-import io.github.lijunguan.imgselector.AlbumConfig;
-import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
-import io.github.lijunguan.imgselector.base.BaseActivity;
 import io.github.lijunguan.imgselector.album.previewimage.ImageDetailFragment;
+import io.github.lijunguan.imgselector.base.BaseActivity;
 import io.github.lijunguan.imgselector.utils.ActivityUtils;
 import io.github.lijunguan.imgselector.utils.KLog;
 
@@ -24,21 +20,11 @@ public class AlbumActivity extends BaseActivity {
 
     private Button mSubmitBtn;
 
-    private AlbumConfig config;
-
-    private Toolbar mToolbar;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
         initViews();
-        config = null;
-        if (getIntent() != null) { //得到用户传入的配置
-            config = getIntent()
-                    .getParcelableExtra(ImageSelector.ARG_ALBUM_CONFIG);
-        }
-
         AlbumFragment albumFragment;
         ImageDetailFragment imageDetailFragment;
 
@@ -56,29 +42,25 @@ public class AlbumActivity extends BaseActivity {
             }
         } else {
             //创建AlbumFragment
-            if (config == null)
-                config = new AlbumConfig();
-            albumFragment = AlbumFragment.newInstance(config);
+
+            albumFragment = AlbumFragment.newInstance();
             ActivityUtils.addFragmentToActivity(
                     getSupportFragmentManager(), albumFragment, AlbumFragment.TAG, false);
 
-            //创建AlbumPresenter
-            mAlbumPresenter = new AlbumPresenter(
-                    getApplicationContext(),
-                    getSupportLoaderManager(),
-                    albumFragment);
         }
+
+        //创建AlbumPresenter
+        mAlbumPresenter = new AlbumPresenter(
+                getApplicationContext(),
+                getSupportLoaderManager(),
+                albumFragment);
 
     }
 
+
     private void initViews() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
         mSubmitBtn = (Button) mToolbar.findViewById(R.id.btn_submit);
         mSubmitBtn.setEnabled(false);
-
         mSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

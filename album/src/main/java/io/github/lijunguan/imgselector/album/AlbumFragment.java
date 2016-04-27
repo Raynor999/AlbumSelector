@@ -28,13 +28,13 @@ import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.album.adapter.FolderListAdapter;
 import io.github.lijunguan.imgselector.album.adapter.ImageGridAdapter;
+import io.github.lijunguan.imgselector.album.previewimage.ImageDetailFragment;
+import io.github.lijunguan.imgselector.album.widget.GridDividerDecorator;
 import io.github.lijunguan.imgselector.base.BaseFragment;
 import io.github.lijunguan.imgselector.cropimage.CropActivity;
 import io.github.lijunguan.imgselector.cropimage.CropFragment;
 import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
 import io.github.lijunguan.imgselector.model.entity.ImageInfo;
-import io.github.lijunguan.imgselector.album.previewimage.ImageDetailFragment;
-import io.github.lijunguan.imgselector.album.widget.GridDividerDecorator;
 import io.github.lijunguan.imgselector.utils.ActivityUtils;
 import io.github.lijunguan.imgselector.utils.FileUtils;
 
@@ -83,20 +83,14 @@ public class AlbumFragment extends BaseFragment
     private ArrayList<ImageInfo> mImages;
 
 
-    public static AlbumFragment newInstance(@NonNull AlbumConfig config) {
-        Bundle args = new Bundle();
-        args.putParcelable(ImageSelector.ARG_ALBUM_CONFIG, config);
-        AlbumFragment fragment = new AlbumFragment();
-        fragment.setArguments(args);
-        return fragment;
+    public static AlbumFragment newInstance() {
+        return new AlbumFragment();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mAlbumConfig = getArguments().getParcelable(ImageSelector.ARG_ALBUM_CONFIG);
-        }
+        mAlbumConfig = ImageSelector.getInstance().getConfig();
         //改用接口监听 而不是让Adapter持有Presenter对象，
         // 1.更符合MVP架构 2.解决当程序处于后台，系统因资源不足杀死App后，复原时会先执行Fragment的onCreate()方法
         //再执行 Activity的onCreate()方法，导致mPresenter throw NullPointerException异常
@@ -129,7 +123,7 @@ public class AlbumFragment extends BaseFragment
             //根据选择模式，打开不同的UI
             if (selectModel == ImageSelector.MULTI_MODE) {
                 mPresenter.previewImage(position);
-            } else if (selectModel == ImageSelector.SINGLE_MODE) {
+            } else if (selectModel == ImageSelector.AVATOR_MODE) {
                 mPresenter.cropImage(imageInfo);
             }
         }
@@ -195,9 +189,8 @@ public class AlbumFragment extends BaseFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mPresenter.result(requestCode, resultCode, data,mTmpFile);
+        mPresenter.result(requestCode, resultCode, data, mTmpFile);
     }
-
 
     @Override
     public void setPresenter(AlbumContract.Presenter presenter) {
@@ -205,7 +198,7 @@ public class AlbumFragment extends BaseFragment
     }
 
     @Override
-    public void showImages(List<ImageInfo> imageInfos) {
+    public void showImages(@NonNull List<ImageInfo> imageInfos) {
         mImages = (ArrayList<ImageInfo>) checkNotNull(imageInfos);
         mImagesAdapter.replaceData(imageInfos);
         mEmptyView.setVisibility(View.GONE);
@@ -284,19 +277,22 @@ public class AlbumFragment extends BaseFragment
                 .findFragmentByTag(ImageDetailFragment.TAG);
 
         if (fragment == null) {
-            fragment = ImageDetailFragment.newInstance(mImages, currentPosition, mAlbumConfig);
+            fragment = ImageDetailFragment.newInstance(mImages, currentPosition);
             ActivityUtils.addFragmentToActivity(mContext.getSupportFragmentManager(),
                     fragment,
                     ImageDetailFragment.TAG,
-                    true);
+                    true); //将ImageDetailFragment 加入返回栈。
         }
-        mContext.getSupportFragmentManager().beginTransaction().hide(this).commit();
+        mContext.getSupportFragmentManager()
+                .beginTransaction()
+                .hide(this)
+                .commit();
     }
 
     @Override
-    public void showImageCropUi(ImageInfo imageInfo) {
+    public void showImageCropUi(@NonNull String  imagePath) {
         Intent intent = new Intent(mContext, CropActivity.class);
-        intent.putExtra(CropFragment.ARG_IMAGE_INFO, imageInfo);
+        intent.putExtra(CropFragment.ARG_IMAGE_PATH, imagePath);
         startActivityForResult(intent, ImageSelector.REQUEST_CROP_IMAGE);
     }
 
@@ -312,8 +308,6 @@ public class AlbumFragment extends BaseFragment
         mContext.setResult(Activity.RESULT_OK, data);
         mContext.finish();
     }
-
-
 
 
     @Override
@@ -346,7 +340,7 @@ public class AlbumFragment extends BaseFragment
     @Override
     public void onHiddenChanged(boolean hidden) {
         if (!hidden) {
-            mContext.setToolbarTitle(getString(R.string.album_activitu_title));
+            mContext.setToolbarTitle(getString(R.string.album_activity_title));
         }
     }
 }

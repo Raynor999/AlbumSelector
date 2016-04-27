@@ -6,6 +6,8 @@ import io.github.lijunguan.imgselector.model.entity.ImageInfo;
 
 /**
  * Created by lijunguan on 2016/4/24.
+ * emial: lijunguan199210@gmail.com
+ * blog: https://lijunguan.github.io
  */
 public interface ImageContract {
 

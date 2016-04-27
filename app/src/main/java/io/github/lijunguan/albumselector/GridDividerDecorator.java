@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.album.widget;
+package io.github.lijunguan.albumselector;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -17,6 +17,7 @@ import android.view.View;
  */
 public class GridDividerDecorator extends RecyclerView.ItemDecoration {
     private static final int[] ATTRS = new int[]{android.R.attr.listDivider};
+
     private Drawable mDivider;
     private int mDividerSize;
 
@@ -52,7 +53,6 @@ public class GridDividerDecorator extends RecyclerView.ItemDecoration {
     private void drawBottomDivider(Canvas c, RecyclerView parent) {
         final int childCount = parent.getChildCount();
         for (int i = 0; i < childCount; i++) {
-
             final View child = parent.getChildAt(i);
             final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child
                     .getLayoutParams();
@@ -66,7 +66,7 @@ public class GridDividerDecorator extends RecyclerView.ItemDecoration {
         }
     }
 
-//过时方法
+// 过时方法
 //    @Override
 //    public void getItemOffsets(Rect outRect, int itemPosition, RecyclerView parent) {
 //        int spanCount = getSpanCount(parent);
@@ -79,14 +79,17 @@ public class GridDividerDecorator extends RecyclerView.ItemDecoration {
 //            outRect.set(0, 0, mDividerSize, mDividerSize);
 //        }
 //    }
-//
+
+
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         int position = parent.getChildAdapterPosition(view);
         int spanCount = getSpanCount(parent);
         if (spanCount == -1)
             throw new ClassCastException("Can not cast" + parent.getLayoutManager() + "to GridLayoutManager");
-        if (isLastCloum(position, spanCount)) {
+        if (isLastRaw(position, spanCount, parent.getAdapter().getItemCount())) {//如果是最好一行不绘制底部
+            outRect.set(0, 0, mDividerSize, 0);
+        } else if (isLastCloum(position, spanCount)) {
             //如果是最后一列则不绘制右边的Divider
             outRect.set(0, 0, 0, mDividerSize);
         } else {
@@ -97,6 +100,11 @@ public class GridDividerDecorator extends RecyclerView.ItemDecoration {
     private boolean isLastCloum(int itemPosition, int spanCount) {
         return (itemPosition + 1) % spanCount == 0;
 
+    }
+
+    private boolean isLastRaw(int itemPosition, int spanCount, int childCount) {
+
+        return itemPosition >= childCount - childCount % spanCount;
     }
 
 

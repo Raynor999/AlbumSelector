@@ -67,23 +67,22 @@ public class AlbumPresenter implements AlbumContract.Presenter {
         switch (requestCode) {
             case ImageSelector.REQUEST_OPEN_CAMERA:
                 if (resultCode == Activity.RESULT_OK) {
+                    if (ImageSelector.getInstance().getConfig().getSelectModel() == ImageSelector.AVATOR_MODE) {
+                        mAlbumView.showImageCropUi(mTmpFile.getPath());
+                        return;
+                    }
                     mAlbumRepository.addSelect(mTmpFile.getAbsolutePath());
                     mAlbumView.selectComplete(mAlbumRepository.getSelectedResult(), true);
-                } else {
+                } else if (mTmpFile != null && mTmpFile.exists()) {
                     //出错时，删除零时文件,
-                    while (mTmpFile != null && mTmpFile.exists()) {
-                        boolean success = mTmpFile.delete();
-                        if (success) {
-                            mTmpFile = null;
-                        }
-                    }
+                    mTmpFile.delete();
                 }
                 break;
             case ImageSelector.REQUEST_CROP_IMAGE:
                 if (resultCode == Activity.RESULT_OK) {
                     String path = data.getStringExtra(CropActivity.CROP_RESULT);
                     mAlbumRepository.addSelect(path);
-                    mAlbumView.selectComplete(mAlbumRepository.getSelectedResult(), true);
+                    mAlbumView.selectComplete(mAlbumRepository.getSelectedResult(), false);
                 }
                 break;
         }
@@ -126,7 +125,7 @@ public class AlbumPresenter implements AlbumContract.Presenter {
     @Override
     public void cropImage(ImageInfo imageInfo) {
         checkNotNull(imageInfo);
-        mAlbumView.showImageCropUi(imageInfo);
+        mAlbumView.showImageCropUi(imageInfo.getPath());
     }
 
     @Override

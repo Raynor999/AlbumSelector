@@ -53,6 +53,8 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
 
+
+    @SuppressWarnings("SuspiciousNameCombination")
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -80,7 +82,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder,  int position) {
         if (isNormalItem(position)) {
             final ImageViewHolder imgHolder = (ImageViewHolder) holder;
             final ImageInfo imageInfo = getItem(position);
@@ -92,7 +94,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     @Override
                     public void onClick(View v) {
                         if (!imageInfo.isSelected()) {
-                            mListener.onSelectedImageClick(imageInfo, mAlbumConfig.getMaxCount(), position);
+                            mListener.onSelectedImageClick(imageInfo, mAlbumConfig.getMaxCount(), imgHolder.getAdapterPosition());
                             imgHolder.mMaskView.setVisibility(View.VISIBLE);
                         } else {
                             mListener.onUnSelectedImageClick(imageInfo);

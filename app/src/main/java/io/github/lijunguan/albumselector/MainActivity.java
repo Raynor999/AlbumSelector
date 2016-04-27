@@ -2,6 +2,7 @@ package io.github.lijunguan.albumselector;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +27,6 @@ import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.utils.KLog;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int SELECT_IMAGE_REQUEST = 100;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
     @Bind(R.id.radio_group_select_model)
     RadioGroup mRadioGroupSelectModel;
+    @Bind(R.id.radio_group_toolbar_color)
+    RadioGroup mRadioGroupToolbarColor;
     @Bind(R.id.switch_carmera)
     SwitchCompat mSwitchCarmera;
     @Bind(R.id.et_max_count)
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        mRecyclerView.addItemDecoration(new GridDividerDecorator(this));
         mAdapter = new SelectedImgAdapter();
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -69,8 +72,30 @@ public class MainActivity extends AppCompatActivity {
         switch (mRadioGroupSelectModel.getCheckedRadioButtonId()) {
             case R.id.radio_multi:
                 imageSelector.setSelectModel(ImageSelector.MULTI_MODE);
+                break;
             case R.id.radio_avator:
                 imageSelector.setSelectModel(ImageSelector.AVATOR_MODE);
+                break;
+            default:
+                imageSelector.setSelectModel(ImageSelector.MULTI_MODE);
+        }
+
+        switch (mRadioGroupToolbarColor.getCheckedRadioButtonId()) {
+            case R.id.radio_red:
+                imageSelector.setToolbarColor(ContextCompat.getColor(this, R.color.red));
+                break;
+            case R.id.radio_green:
+                imageSelector.setToolbarColor(ContextCompat.getColor(this, R.color.green));
+                break;
+            case R.id.radio_blue:
+                imageSelector.setToolbarColor(ContextCompat.getColor(this, R.color.blue));
+                break;
+            case R.id.radio_orange:
+                imageSelector.setToolbarColor(ContextCompat.getColor(this, R.color.orange));
+                break;
+            default:
+                imageSelector.setToolbarColor(ContextCompat.getColor(this, R.color.red));
+
         }
 
         imageSelector.setShowCamera(mSwitchCarmera.isChecked());
@@ -120,7 +145,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(ImgViewHolder holder, int position) {
-            Glide.with(MainActivity.this).load(mImagePaths.get(position)).into((ImageView) holder.itemView);
+            Glide.with(MainActivity.this)
+                    .load(mImagePaths.get(position))
+                    .into((ImageView) holder.itemView);
         }
 
         @Override

@@ -35,16 +35,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.Future;
 
 import static io.github.lijunguan.imgselector.utils.CommonUtils.checkArgument;
 import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
 
 /**
- * An {@link ImageView} with a fixed viewport and cropping capabilities.
+
  */
 public class CropView extends ImageView {
+
     public static final String TAG = "CropView";
+
     private static final int MAX_TOUCH_POINTS = 2;
     private TouchManager touchManager;
 
@@ -112,40 +113,6 @@ public class CropView extends ImageView {
         resetTouchManager();
     }
 
-    /**
-     * Returns the native aspect ratio of the image.
-     *
-     * @return The native aspect ratio of the image.
-     */
-    public float getImageRatio() {
-        Bitmap bitmap = getImageBitmap();
-        return bitmap != null ? (float) bitmap.getWidth() / (float) bitmap.getHeight() : 0f;
-    }
-
-    /**
-     * Returns the aspect ratio of the viewport and crop rect.
-     *
-     * @return The current viewport aspect ratio.
-     */
-    public float getViewportRatio() {
-        return touchManager.getAspectRatio();
-    }
-
-    /**
-     * Sets the aspect ratio of the viewport and crop rect.  Defaults to
-     * the native aspect ratio if <code>ratio == 0</code>.
-     *
-     * @param ratio The new aspect ratio of the viewport.
-     */
-    public void setViewportRatio(float ratio) {
-        if (Float.compare(ratio, 0) == 0) {
-            ratio = getImageRatio();
-        }
-        touchManager.setAspectRatio(ratio);
-        resetTouchManager();
-        invalidate();
-    }
-
     @Override
     public void setImageResource(@DrawableRes int resId) {
         final Bitmap bitmap = resId > 0
@@ -186,14 +153,6 @@ public class CropView extends ImageView {
         this.bitmap = bitmap;
         resetTouchManager();
         invalidate();
-    }
-
-    /**
-     * @return Current working Bitmap or <code>null</code> if none has been set yet.
-     */
-    @Nullable
-    public Bitmap getImageBitmap() {
-        return bitmap;
     }
 
     private void resetTouchManager() {
@@ -262,12 +221,6 @@ public class CropView extends ImageView {
         return touchManager.getViewportHeight();
     }
 
-    /**
-     * Offers common utility extensions.
-     *
-     * @return Extensions object used to perform chained calls.
-     */
-
 
     public static class CropRequest {
 
@@ -309,7 +262,6 @@ public class CropView extends ImageView {
          * 同步地将裁剪后的bitmap 写入到提供的file中，  如果需要会创建父目录
          *
          * @param file Must have permissions to write, will be created if doesn't exist or overwrite if it does.
-         * @return {@link Future} used to cancel or wait for this request.
          */
         public void into(@NonNull File file) throws IOException {
             final Bitmap croppedBitmap = cropView.crop();
@@ -328,15 +280,13 @@ public class CropView extends ImageView {
                 bitmap.compress(format, quality, outputStream);
                 outputStream.flush();
             } finally {
-
-                if (outputStream != null) {
-                    try {
+                try {
+                    if (outputStream != null) {
                         outputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
             }
 
         }
