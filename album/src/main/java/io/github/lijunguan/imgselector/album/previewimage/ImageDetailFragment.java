@@ -68,7 +68,6 @@ public class ImageDetailFragment extends BaseFragment
             mCurrentPosition = getArguments().getInt(ARG_CURRENT_POSITION);
         }
         mAlbumConfig = ImageSelector.getInstance().getConfig();
-        mPresenter = new ImageDetailPresenter(this);
         mPagerAdapter = new ImageDetailAdapter(mImageInfos);
     }
 
@@ -81,11 +80,12 @@ public class ImageDetailFragment extends BaseFragment
         mCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ImageInfo currentItem = mPagerAdapter.getItem(mViewPager.getCurrentItem());
+                int position = mViewPager.getCurrentItem();
+                ImageInfo currentItem = mPagerAdapter.getItem(position);
                 if (!currentItem.isSelected()) {
-                    mPresenter.selectImage(currentItem, mAlbumConfig.getMaxCount(), 0);
+                    mPresenter.selectImage(currentItem, mAlbumConfig.getMaxCount(), position);
                 } else {
-                    mPresenter.unSelectImage(currentItem);
+                    mPresenter.unSelectImage(currentItem, position);
                 }
             }
         });

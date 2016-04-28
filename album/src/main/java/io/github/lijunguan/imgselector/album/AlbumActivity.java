@@ -8,6 +8,7 @@ import android.widget.Button;
 import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.album.previewimage.ImageDetailFragment;
 import io.github.lijunguan.imgselector.base.BaseActivity;
+import io.github.lijunguan.imgselector.model.AlbumRepository;
 import io.github.lijunguan.imgselector.utils.ActivityUtils;
 import io.github.lijunguan.imgselector.utils.KLog;
 
@@ -48,13 +49,12 @@ public class AlbumActivity extends BaseActivity {
                     getSupportFragmentManager(), albumFragment, AlbumFragment.TAG, false);
 
         }
-
+        AlbumRepository albumRepository = AlbumRepository.getInstance(this);
         //创建AlbumPresenter
         mAlbumPresenter = new AlbumPresenter(
-                getApplicationContext(),
+                albumRepository,
                 getSupportLoaderManager(),
                 albumFragment);
-
     }
 
 
@@ -100,6 +100,11 @@ public class AlbumActivity extends BaseActivity {
             return;
         }
         super.onBackPressed();
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mAlbumPresenter.clearCache();
     }
 }

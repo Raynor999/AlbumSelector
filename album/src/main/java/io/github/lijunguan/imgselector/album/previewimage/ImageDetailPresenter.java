@@ -2,6 +2,7 @@ package io.github.lijunguan.imgselector.album.previewimage;
 
 import android.support.annotation.NonNull;
 
+import io.github.lijunguan.imgselector.album.AlbumContract;
 import io.github.lijunguan.imgselector.model.AlbumRepository;
 import io.github.lijunguan.imgselector.model.entity.ImageInfo;
 
@@ -15,12 +16,16 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
 
     private ImageContract.View mImageDetailView;
 
+    private AlbumContract.View mAlbumView;
 
+    public ImageDetailPresenter(
+            @NonNull AlbumRepository albumRepository,
+            @NonNull ImageContract.View imageDetailView,
+            @NonNull AlbumContract.View albumView) {
 
-
-    public ImageDetailPresenter(ImageContract.View imageDetailView) {
-        mImageDetailView = imageDetailView;
-        mAlbumRepository = AlbumRepository.getInstance();
+        mImageDetailView = checkNotNull(imageDetailView, "ImageContract.View  cannt be null");
+        mAlbumRepository = checkNotNull(albumRepository, "AlbumRepository cannt be null");
+        mAlbumView = checkNotNull(albumView,"AlbumContract.View cannt be null");
         mImageDetailView.setPresenter(this);
     }
 
@@ -29,7 +34,6 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
 //        int index = folder.getImgInfos().indexOf(mImageInfo);
 //        mImageDetailView.showImageDetail(index, folder.getImgInfos());
     }
-
 
 
     @Override
@@ -42,13 +46,15 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
         imageInfo.setSelected(true);
         mAlbumRepository.addSelect(imageInfo.getPath());
         mImageDetailView.showSelectedCount(mAlbumRepository.getSelectedCount());
+        mAlbumView.syncCheckboxStatus(position);
     }
 
     @Override
-    public void unSelectImage(@NonNull ImageInfo imageInfo) {
+    public void unSelectImage(@NonNull ImageInfo imageInfo,int position) {
         checkNotNull(imageInfo, "ImageInfo cannot be null");
         imageInfo.setSelected(false);
         mAlbumRepository.removeSelect(imageInfo.getPath());
         mImageDetailView.showSelectedCount(mAlbumRepository.getSelectedCount());
+        mAlbumView.syncCheckboxStatus(position);
     }
 }

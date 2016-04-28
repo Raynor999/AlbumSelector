@@ -97,7 +97,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                             mListener.onSelectedImageClick(imageInfo, mAlbumConfig.getMaxCount(), imgHolder.getAdapterPosition());
                             imgHolder.mMaskView.setVisibility(View.VISIBLE);
                         } else {
-                            mListener.onUnSelectedImageClick(imageInfo);
+                            mListener.onUnSelectedImageClick(imageInfo,imgHolder.getAdapterPosition());
                             imgHolder.mMaskView.setVisibility(View.GONE);
                         }
                     }

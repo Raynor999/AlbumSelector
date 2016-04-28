@@ -29,10 +29,12 @@ import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.album.adapter.FolderListAdapter;
 import io.github.lijunguan.imgselector.album.adapter.ImageGridAdapter;
 import io.github.lijunguan.imgselector.album.previewimage.ImageDetailFragment;
+import io.github.lijunguan.imgselector.album.previewimage.ImageDetailPresenter;
 import io.github.lijunguan.imgselector.album.widget.GridDividerDecorator;
 import io.github.lijunguan.imgselector.base.BaseFragment;
 import io.github.lijunguan.imgselector.cropimage.CropActivity;
 import io.github.lijunguan.imgselector.cropimage.CropFragment;
+import io.github.lijunguan.imgselector.model.AlbumRepository;
 import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
 import io.github.lijunguan.imgselector.model.entity.ImageInfo;
 import io.github.lijunguan.imgselector.utils.ActivityUtils;
@@ -109,8 +111,8 @@ public class AlbumFragment extends BaseFragment
         }
 
         @Override
-        public void onUnSelectedImageClick(ImageInfo imageInfo) {
-            mPresenter.unSelectImage(imageInfo);
+        public void onUnSelectedImageClick(ImageInfo imageInfo, int position) {
+            mPresenter.unSelectImage(imageInfo, position);
         }
 
         @Override
@@ -146,8 +148,8 @@ public class AlbumFragment extends BaseFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onResume() {
+        super.onResume();
         mPresenter.start(); //初始化数据
     }
 
@@ -278,6 +280,13 @@ public class AlbumFragment extends BaseFragment
 
         if (fragment == null) {
             fragment = ImageDetailFragment.newInstance(mImages, currentPosition);
+            AlbumRepository albumRepository = AlbumRepository.getInstance(mContext);
+
+            new ImageDetailPresenter(
+                    albumRepository,
+                    fragment,
+                    AlbumFragment.this);
+
             ActivityUtils.addFragmentToActivity(mContext.getSupportFragmentManager(),
                     fragment,
                     ImageDetailFragment.TAG,
@@ -286,11 +295,12 @@ public class AlbumFragment extends BaseFragment
         mContext.getSupportFragmentManager()
                 .beginTransaction()
                 .hide(this)
+                .show(fragment)
                 .commit();
     }
 
     @Override
-    public void showImageCropUi(@NonNull String  imagePath) {
+    public void showImageCropUi(@NonNull String imagePath) {
         Intent intent = new Intent(mContext, CropActivity.class);
         intent.putExtra(CropFragment.ARG_IMAGE_PATH, imagePath);
         startActivityForResult(intent, ImageSelector.REQUEST_CROP_IMAGE);
@@ -307,6 +317,15 @@ public class AlbumFragment extends BaseFragment
         }
         mContext.setResult(Activity.RESULT_OK, data);
         mContext.finish();
+    }
+
+    @Override
+    public void syncCheckboxStatus(int position) {
+        // 同步Checkbox 状态
+        if (mAlbumConfig.isShownCamera()) {
+            position++;
+        }
+        mImagesAdapter.notifyItemChanged(position);
     }
 
 
@@ -326,7 +345,7 @@ public class AlbumFragment extends BaseFragment
 
         void onSelectedImageClick(ImageInfo imageInfo, int maxCount, int position);
 
-        void onUnSelectedImageClick(ImageInfo imageInfo);
+        void onUnSelectedImageClick(ImageInfo imageInfo, int position);
 
         void onCameraItemClick();
 

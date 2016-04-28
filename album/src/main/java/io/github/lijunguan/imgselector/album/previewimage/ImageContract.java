@@ -1,5 +1,7 @@
 package io.github.lijunguan.imgselector.album.previewimage;
 
+import android.support.annotation.NonNull;
+
 import io.github.lijunguan.imgselector.base.BasePresenter;
 import io.github.lijunguan.imgselector.base.BaseView;
 import io.github.lijunguan.imgselector.model.entity.ImageInfo;
@@ -22,9 +24,9 @@ public interface ImageContract {
 
     interface Presenter extends BasePresenter {
 
-        void selectImage(ImageInfo imageInfo, int maxCount, int position);
+        void selectImage(@NonNull ImageInfo imageInfo, int maxCount, int position);
 
-        void unSelectImage(ImageInfo imageInfo);
+        void unSelectImage(@NonNull ImageInfo imageInfo, int position);
     }
 
 }

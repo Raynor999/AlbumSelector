@@ -1,7 +1,6 @@
 package io.github.lijunguan.imgselector.album;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
@@ -31,27 +30,30 @@ public class AlbumPresenter implements AlbumContract.Presenter {
 
     private LoaderManager mLoadManager;
 
-    private Context mContext;
 
-
-    public AlbumPresenter(@NonNull Context context, @NonNull LoaderManager loaderManager, @NonNull AlbumContract.View albumView) {
+    public AlbumPresenter(
+            @NonNull AlbumRepository albumRepository,
+            @NonNull LoaderManager loaderManager,
+            @NonNull AlbumContract.View albumView) {
         mLoadManager = checkNotNull(loaderManager, "loader manager cannot be null");
         mAlbumView = checkNotNull(albumView, "albumView cannot be null");
-        mContext = checkNotNull(context);
-        mAlbumRepository = AlbumRepository.getInstance();
+        mAlbumRepository = checkNotNull(albumRepository, "albumRepository cannot be null");
         //为mAlbumView 设置Presenter
         mAlbumView.setPresenter(this);
-
     }
 
     @Override
     public void start() {
+        loadData();
+    }
 
-        mAlbumRepository.initImgRepository(mContext, mLoadManager, new AlbumDataSource.LoadImagesCallback() {
+    private void loadData() {
+        mAlbumRepository.initImgRepository(mLoadManager, new AlbumDataSource.InitAlbumCallback() {
             @Override
-            public void onImagesLoaded(List<ImageInfo> images) {
-                mAlbumView.showImages(images);
-                mAlbumView.initFolderList(mAlbumRepository.getFolders());
+            public void onInitFinish(List<AlbumFolder> folders) {
+                List<ImageInfo> allImages = folders.get(0).getImgInfos();
+                mAlbumView.showImages(allImages);
+                mAlbumView.initFolderList(folders);
             }
 
             @Override
@@ -110,7 +112,7 @@ public class AlbumPresenter implements AlbumContract.Presenter {
     }
 
     @Override
-    public void unSelectImage(@NonNull ImageInfo imageInfo) {
+    public void unSelectImage(@NonNull ImageInfo imageInfo,int positon) {
         checkNotNull(imageInfo, "ImageInfo cannot be null");
         imageInfo.setSelected(false);
         mAlbumRepository.removeSelect(imageInfo.getPath());
@@ -137,6 +139,10 @@ public class AlbumPresenter implements AlbumContract.Presenter {
     @Override
     public void openCamera() {
         mAlbumView.showSystemCamera();
+    }
+
+    public void clearCache() {
+        mAlbumRepository.clearCacheAndSelect();
     }
 
 }
