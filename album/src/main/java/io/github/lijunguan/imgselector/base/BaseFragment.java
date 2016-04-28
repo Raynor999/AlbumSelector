@@ -15,8 +15,6 @@ import io.github.lijunguan.imgselector.utils.KLog;
  * Created by lijunguan on 2016/4/8
  * email: lijunguan199210@gmail.com
  * blog : https://lijunguan.github.io
- *
- *
  */
 public class BaseFragment extends Fragment {
 
@@ -24,14 +22,12 @@ public class BaseFragment extends Fragment {
 
     protected AlbumActivity mContext;
 
-    private WeakReference<AlbumActivity> mActivityRef;
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         //在Fragment中用 弱引用的方式持有一份Activity 引用，方便在Fragment中使用Context
         if (context instanceof AlbumActivity) {
-            mActivityRef = new WeakReference<>((AlbumActivity) getActivity());
+            WeakReference<AlbumActivity> mActivityRef = new WeakReference<>((AlbumActivity) getActivity());
             mContext = mActivityRef.get();
         } else {
             throw new IllegalArgumentException("unexcepted context ");

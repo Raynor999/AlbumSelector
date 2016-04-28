@@ -92,12 +92,25 @@ public class AlbumFragment extends BaseFragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAlbumConfig = ImageSelector.getInstance().getConfig();
+
+        if (savedInstanceState != null) {
+            mAlbumConfig = savedInstanceState.getParcelable(ImageSelector.ARG_ALBUM_CONFIG);
+            ImageSelector.getInstance().setConfig(mAlbumConfig);
+        } else {
+            mAlbumConfig = ImageSelector.getInstance().getConfig();
+        }
+
         //改用接口监听 而不是让Adapter持有Presenter对象，
         // 1.更符合MVP架构 2.解决当程序处于后台，系统因资源不足杀死App后，复原时会先执行Fragment的onCreate()方法
         //再执行 Activity的onCreate()方法，导致mPresenter throw NullPointerException异常
         mImagesAdapter = new ImageGridAdapter(mContext, mAlbumConfig, mItemListener);
         mFolderAdapter = new FolderListAdapter(mContext, mFolderItemClickListener);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //保存配置参数,防止Application被kill后，恢复Fragment时，配置参数发送异常
+        outState.putParcelable(ImageSelector.ARG_ALBUM_CONFIG, mAlbumConfig);
     }
 
     /**

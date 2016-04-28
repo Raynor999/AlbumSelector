@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">ImageSelector</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="multi_model">多选模式</string>
+    <string name="select_avator_model">头像选择模式（单选模式）</string>
+    <string name="label_select_model">选择模式配置</string>
+    <string name="lable_show_carmera">显示相机</string>
+    <string name="hint_max_count">最大可选择数量</string>
+    <string name="hint_grid_columns">图片Grid列数</string>
+</resources>

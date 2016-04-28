@@ -42,6 +42,8 @@ public class ImageSelector {
      */
     public static final int MULTI_MODE = 0x1;
 
+
+
     private AlbumConfig mConfig;
 
 
@@ -54,7 +56,9 @@ public class ImageSelector {
     public AlbumConfig getConfig() {
         return mConfig;
     }
-
+    public void setConfig(AlbumConfig mConfig) {
+        this.mConfig = mConfig;
+    }
     private ImageSelector() {
         mConfig = new AlbumConfig();
     }

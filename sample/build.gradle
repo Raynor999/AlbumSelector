@@ -1,4 +1,4 @@
-apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
 
 def cfg = rootProject.ext.configuration
 
@@ -8,6 +8,7 @@ android {
     buildToolsVersion cfg.buildToolsVersion
 
     defaultConfig {
+        applicationId cfg.packageName
         minSdkVersion cfg.minSDK
         targetSdkVersion cfg.targetSDK
         versionCode cfg.version_code
@@ -32,6 +33,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
     }
@@ -41,14 +43,13 @@ android {
 
 
 dependencies {
-    def libs = rootProject.ext.libs // 库
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    def libs = rootProject.ext.libs
+    // 库
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
+    compile project(':album')
     compile "com.android.support:appcompat-v7:${libs.supportVersion}"
-    compile "com.android.support:recyclerview-v7:${libs.supportVersion}"
-    compile "com.android.support:support-v4:${libs.supportVersion}"
-    compile "com.android.support:design:${libs.supportVersion}"
-    compile "com.github.bumptech.glide:glide:${libs.glide}"
-    compile 'konifar:fab-transformation:1.0.0'
-    compile 'com.github.chrisbanes:PhotoView:1.2.6'
+    compile "com.jakewharton:butterknife:${libs.butterknife}"
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 }

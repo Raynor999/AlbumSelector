@@ -67,8 +67,21 @@ public class ImageDetailFragment extends BaseFragment
             mImageInfos = getArguments().getParcelableArrayList(ARG_IMAGE_LIST);
             mCurrentPosition = getArguments().getInt(ARG_CURRENT_POSITION);
         }
-        mAlbumConfig = ImageSelector.getInstance().getConfig();
+        if (savedInstanceState != null) {
+            //当Application被kill,复原Fragment时，得到原本配置信息
+            mAlbumConfig = savedInstanceState.getParcelable(ImageSelector.ARG_ALBUM_CONFIG);
+            ImageSelector.getInstance().setConfig(mAlbumConfig);
+        } else {
+            mAlbumConfig = ImageSelector.getInstance().getConfig();
+        }
+
         mPagerAdapter = new ImageDetailAdapter(mImageInfos);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //保存配置参数,防止Application被kill后，恢复Fragment时，配置参数发送异常
+        outState.putParcelable(ImageSelector.ARG_ALBUM_CONFIG, mAlbumConfig);
     }
 
     @Nullable
