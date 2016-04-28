@@ -1,1 +1,1 @@
-include ':sample', ':album'
+include ':sample', ':imageseletor'

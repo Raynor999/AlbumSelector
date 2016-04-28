@@ -47,7 +47,7 @@ dependencies {
     // 库
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile project(':album')
+    compile project(':imageseletor')
     compile "com.android.support:appcompat-v7:${libs.supportVersion}"
     compile "com.jakewharton:butterknife:${libs.butterknife}"
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
