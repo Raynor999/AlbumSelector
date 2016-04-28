@@ -1,0 +1,19 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AlbumTheme" parent="Base.AlbumTheme"/>
+
+    <style name="Base.AlbumTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:listDivider">@drawable/divider_bg</item>
+    </style>
+
+
+    <style name="AlbumTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AlbumTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+</resources>

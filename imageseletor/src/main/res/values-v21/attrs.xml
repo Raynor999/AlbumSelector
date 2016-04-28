@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CropView">
+        <!-- Viewport ratio used to compute height based off view width -->
+        <attr name="ViewportRatio" format="float" />
+        <!-- Viewport overlay color -->
+        <attr name="ViewportOverlayColor" format="color" />
+        <!-- Viewport overlay padding -->
+        <attr name="ViewportOverlayPadding" format="dimension" />
+        <!-- Maximum zoom level -->
+        <attr name="MaxScale" format="float" />
+        <!-- Minimum  zoom level -->
+        <attr name="MinScale" format="float" />
+    </declare-styleable>
+</resources>

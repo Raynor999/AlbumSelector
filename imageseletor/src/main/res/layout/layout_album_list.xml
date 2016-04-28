@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/mask_color"
+        android:clickable="true"
+        android:visibility="gone"/>
+
+    <android.support.percent.PercentFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <io.codetail.widget.RevealFrameLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="bottom"
+            app:layout_heightPercent="80%"
+            app:layout_widthPercent="100%">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_album_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:visibility="invisible"/>
+        </io.codetail.widget.RevealFrameLayout>
+    </android.support.percent.PercentFrameLayout>
+
+</merge>

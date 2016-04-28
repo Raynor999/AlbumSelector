@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<io.github.lijunguan.imgselector.cropimage.crop.CropView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/crop_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:ViewportOverlayPadding="8dp"
+    app:ViewportRatio="1.0" />
