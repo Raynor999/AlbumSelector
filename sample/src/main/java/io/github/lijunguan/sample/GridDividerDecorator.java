@@ -1,4 +1,4 @@
-package io.github.lijunguan.albumselector;
+package io.github.lijunguan.sample;
 
 import android.content.Context;
 import android.content.res.TypedArray;

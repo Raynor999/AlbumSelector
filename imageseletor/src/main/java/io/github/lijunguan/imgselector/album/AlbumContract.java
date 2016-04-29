@@ -16,8 +16,6 @@ import io.github.lijunguan.imgselector.model.entity.ImageInfo;
  * Created by lijunguan on 2016/4/19.
  * emial: lijunguan199210@gmail.com
  * blog: https://lijunguan.github.io
- * <p/>
- * <p/>
  * 指定 View 和 Presenter之间的关系，统一声明便于查看和管理接口方法
  */
 public interface AlbumContract {

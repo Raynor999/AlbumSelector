@@ -15,6 +15,7 @@ android {
         versionCode cfg.version_code
         versionName cfg.version_name
     }
+
     buildTypes {
         debug {
             // 显示Log
@@ -35,6 +36,11 @@ android {
     }
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
@@ -60,21 +66,26 @@ dependencies {
 def siteUrl = 'https://github.com/lijunguan/AlbumSelector'    // project homepage
 def gitUrl = 'https://github.com/lijunguan/AlbumSelector.git' // project git
 
-version = "0.0.1"
-group = "io.github.lijunguan"
+version = "0.1.0"
 
+group = "com.lijunguan"
 
+//
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
+    user = properties.getProperty("bintrayUser")
+    key = properties.getProperty("bintrayApikey")
+
+//    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+//    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
 
     dryRun = false
     publish = true
     configurations = ['archives']
     pkg {
-        repo = "android"
+        repo = "maven"
         name = "image-selector"                // project name in jcenter
         desc = "a image selector module for android "
         websiteUrl = siteUrl
@@ -82,7 +93,6 @@ bintray {
         licenses = ["Apache-2.0"]
         labels = ['aar', 'android']
         publish = true
-        publicDownloadNumbers = true
     }
 }
 
@@ -141,7 +151,7 @@ javadoc {
         charSet 'UTF-8'
         author true
         version true
-        links "http://docs.oracle.com/javase/7/docs/api"
+        links "http://docs.oracle.com/javase/8/docs/api"
         title "io.github.lijunguan"
     }
 }
