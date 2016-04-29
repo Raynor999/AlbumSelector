@@ -1,17 +1,19 @@
 package io.github.lijunguan.imgselector.base;
 
-import android.os.Bundle;
+import android.content.DialogInterface;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
-import io.github.lijunguan.imgselector.utils.KLog;
 import io.github.lijunguan.imgselector.utils.StatusBarUtil;
 
 /**
@@ -22,16 +24,11 @@ import io.github.lijunguan.imgselector.utils.StatusBarUtil;
 
 public class BaseActivity extends AppCompatActivity {
 
+
+
     protected Toolbar mToolbar;
 
-    public static final String TAG = "life_cycle";
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        KLog.d(TAG, "=======Activity=========onCreate===========");
-    }
+    private AlertDialog mAlertDialog;
 
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
@@ -49,6 +46,9 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 设置状态栏颜色，支持 API14 以上
+     */
     protected void setStatusBar() {
         int toolBarColor = ImageSelector.getInstance().getConfig().getToolbarColor();
         if (toolBarColor != -1) {
@@ -59,6 +59,43 @@ public class BaseActivity extends AppCompatActivity {
             StatusBarUtil.setColor(this, ContextCompat.getColor(this, R.color.primary));
 
         }
+    }
+
+    /**
+     * Android6.0 动态申请权限，如果这个permission已经被用户拒绝过，
+     * 则弹出一个对话框，显示rationale内容（解释为什么要申请该权限），  否则 立即申请权限。
+     *
+     * @param permission  要申请的权限
+     * @param rationale   申请权限原因描述
+     * @param requestCode
+     */
+    public void requestPermission(final String permission, String rationale, final int requestCode) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+            showAlertDialog(getString(R.string.permission_title_rationale), rationale,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(BaseActivity.this, new String[]{permission}, requestCode);
+                        }
+                    }, getString(R.string.label_ok), null, getString(R.string.label_cancel));
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
+        }
+    }
+
+
+
+    protected void showAlertDialog(@Nullable String title, @Nullable String message,
+                                   @Nullable DialogInterface.OnClickListener onPositiveButtonClickListener,
+                                   @NonNull String positiveText,
+                                   @Nullable DialogInterface.OnClickListener onNegativeButtonClickListener,
+                                   @NonNull String negativeText) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setPositiveButton(positiveText, onPositiveButtonClickListener);
+        builder.setNegativeButton(negativeText, onNegativeButtonClickListener);
+        mAlertDialog = builder.show();
     }
 
     @Override
@@ -73,37 +110,11 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        KLog.d(TAG, "======Activity==========onStart===========");
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        KLog.d(TAG, "======Activity==========onResume===========");
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        KLog.d(TAG, "======Activity==========onPause===========");
-
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
-        KLog.d(TAG, "======Activity==========onStop===========");
+        if (mAlertDialog != null && mAlertDialog.isShowing()) {
+            mAlertDialog.dismiss();
+        }
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        KLog.d(TAG, "=====Activity===========onDestroy===========");
-    }
-
 
 }

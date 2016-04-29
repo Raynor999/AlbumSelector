@@ -12,4 +12,9 @@
     <string name = "btn_submit_text">完成</string>
     <string name="crop_activity_title">选择头像</string>
     <string name="label_general_folder_name">所有图片</string>
+    <string name="permission_title_rationale">需要权限</string>
+    <string name="label_ok">确定</string>
+    <string name="label_cancel">取消</string>
+    <string name="permission_read_storage_rationale">需要读取外部存储权限，来加载手机图片</string>
+    <string name="permission_denied_error_msg">权限获取失败，无法加载图片！</string>
 </resources>

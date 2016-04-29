@@ -3,6 +3,7 @@ package io.github.lijunguan.imgselector.album;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.util.List;
@@ -22,7 +23,7 @@ public interface AlbumContract {
 
     interface View extends BaseView<Presenter> {
 
-        void showEmptyView();
+        void showEmptyView(@Nullable CharSequence message);
 
         void showImages(@NonNull List<ImageInfo> imageInfos);
 
@@ -32,7 +33,7 @@ public interface AlbumContract {
 
         void hideFolderList();
 
-        void initFolderList(List<AlbumFolder> folders);
+        void initFolderList(@NonNull List<AlbumFolder> folders);
 
         void showImageDetailUi(int currentPosition); // 打开ImagedetailFragment
 

@@ -1,20 +1,26 @@
 package io.github.lijunguan.imgselector.album;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.konifar.fab_transformation.FabTransformation;
 
@@ -51,6 +57,8 @@ public class AlbumFragment extends BaseFragment
         implements AlbumContract.View, View.OnClickListener {
 
     public static final String TAG = AlbumFragment.class.getSimpleName();
+
+    public static final int REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101;
 
     private AlbumContract.Presenter mPresenter;
 
@@ -163,7 +171,34 @@ public class AlbumFragment extends BaseFragment
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.start(); //初始化数据
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN //READ_EXTERNAL_STORAGE Permission 再 API Level 16 时被添加
+                && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            mContext.requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
+                    getString(R.string.permission_read_storage_rationale),
+                    REQUEST_STORAGE_READ_ACCESS_PERMISSION);
+        } else {
+            mPresenter.start(); //初始化数据
+        }
+    }
+
+    /**
+     * 当动态权限申请结果的回调
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_STORAGE_READ_ACCESS_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mPresenter.start(); //初始化数据
+                } else {
+//                    showToast(getString(R.string.permission_denied_error_msg));
+                    showEmptyView(getString(R.string.permission_denied_error_msg));
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     private void initViews(View rootView) {
@@ -259,10 +294,8 @@ public class AlbumFragment extends BaseFragment
     }
 
     @Override
-    public void initFolderList(List<AlbumFolder> folders) {
-        if (folders != null) {
-            mFolderAdapter.setData(folders);
-        }
+    public void initFolderList(@NonNull List<AlbumFolder> folders) {
+        mFolderAdapter.setData(folders);
     }
 
     @Override
@@ -343,7 +376,11 @@ public class AlbumFragment extends BaseFragment
 
 
     @Override
-    public void showEmptyView() {
+    public void showEmptyView(@Nullable CharSequence message) {
+        if (!TextUtils.isEmpty(message)) {
+            TextView textView = (TextView) mEmptyView.findViewById(R.id.tv_empty);
+            textView.setText(message);
+        }
         mEmptyView.setVisibility(View.VISIBLE);
     }
 

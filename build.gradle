@@ -25,12 +25,10 @@ ext {
             packageName       : "io.lijunguan.github.sample",
             buildToolsVersion : "23.0.3",
             compileVersion    : 23,
-            minSDK           : 15,
-            targetSDK         : 22,
+            minSDK           : 11,
+            targetSDK         : 23,
             version_code      : 1,
             version_name      : "0.01"
-
-
     ]
     libs         = [
             supportVersion    : "23.2.1",

@@ -58,7 +58,7 @@ public class AlbumPresenter implements AlbumContract.Presenter {
 
             @Override
             public void onDataNoAvaliable() {
-                mAlbumView.showEmptyView();
+                mAlbumView.showEmptyView(null);
             }
         });
     }

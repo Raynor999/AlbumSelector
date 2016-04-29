@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
+
 
 def cfg = rootProject.ext.configuration
 
@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         minSdkVersion cfg.minSDK
-        targetSdkVersion cfg.targetSDK
+        targetSdkVersion 23
         versionCode cfg.version_code
         versionName cfg.version_name
     }

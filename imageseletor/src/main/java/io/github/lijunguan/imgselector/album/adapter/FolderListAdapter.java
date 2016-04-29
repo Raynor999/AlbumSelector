@@ -1,6 +1,7 @@
 package io.github.lijunguan.imgselector.album.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.lijunguan.imgselector.R;
-import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
 import io.github.lijunguan.imgselector.album.AlbumFragment;
+import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
 
 import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
 
@@ -81,7 +82,7 @@ public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.Fo
         return mData.size();
     }
 
-    public void setData(List<AlbumFolder> data) {
+    public void setData(@NonNull List<AlbumFolder> data) {
         mData = checkNotNull(data);
         notifyDataSetChanged();
     }
