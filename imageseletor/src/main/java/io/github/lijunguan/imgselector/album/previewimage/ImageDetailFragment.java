@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,6 @@ public class ImageDetailFragment extends BaseFragment
             mAlbumConfig = ImageSelector.getInstance().getConfig();
         }
 
-        mPagerAdapter = new ImageDetailAdapter(mImageInfos);
     }
 
     @Override
@@ -102,6 +102,7 @@ public class ImageDetailFragment extends BaseFragment
                 }
             }
         });
+        mPagerAdapter = new ImageDetailAdapter(Glide.with(mContext), mImageInfos);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setCurrentItem(mCurrentPosition);
         mViewPager.addOnPageChangeListener(onPageChangeListener);
@@ -160,8 +161,12 @@ public class ImageDetailFragment extends BaseFragment
 
         private List<ImageInfo> mData = new ArrayList<>();
 
-        public ImageDetailAdapter(List<ImageInfo> data) {
+        private final RequestManager mRequestManager;
+
+
+        public ImageDetailAdapter(RequestManager requestManager, List<ImageInfo> data) {
             mData = checkNotNull(data);
+            mRequestManager = checkNotNull(requestManager);
         }
 
         @Override
@@ -176,11 +181,14 @@ public class ImageDetailFragment extends BaseFragment
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            PhotoView photoView = new PhotoView(container.getContext());
-            Glide.with(container.getContext())
+            PhotoView photoView = (PhotoView) LayoutInflater.from(container.getContext())
+                    .inflate(R.layout.item_image_detail, container, false);
+            mRequestManager
                     .load(mData.get(position).getPath())
+                    .asBitmap()
+                    .fitCenter()
                     .into(photoView);
-            container.addView(photoView, ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT);
+            container.addView(photoView);
             return photoView;
         }
 

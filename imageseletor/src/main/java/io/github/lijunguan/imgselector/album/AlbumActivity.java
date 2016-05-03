@@ -5,6 +5,9 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.MemoryCategory;
+
 import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.album.previewimage.ImageDetailFragment;
 import io.github.lijunguan.imgselector.base.BaseActivity;
@@ -26,6 +29,8 @@ public class AlbumActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
         initViews();
+        Glide.get(this).setMemoryCategory(MemoryCategory.HIGH);
+
         AlbumFragment albumFragment;
         ImageDetailFragment imageDetailFragment;
 

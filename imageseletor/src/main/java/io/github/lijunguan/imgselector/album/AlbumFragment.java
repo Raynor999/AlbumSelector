@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.konifar.fab_transformation.FabTransformation;
 
 import java.io.File;
@@ -111,8 +113,9 @@ public class AlbumFragment extends BaseFragment
         //改用接口监听 而不是让Adapter持有Presenter对象，
         // 1.更符合MVP架构 2.解决当程序处于后台，系统因资源不足杀死App后，复原时会先执行Fragment的onCreate()方法
         //再执行 Activity的onCreate()方法，导致mPresenter throw NullPointerException异常
-        mImagesAdapter = new ImageGridAdapter(mContext, mAlbumConfig, mItemListener);
-        mFolderAdapter = new FolderListAdapter(mContext, mFolderItemClickListener);
+        RequestManager requestManager = Glide.with(this);
+        mImagesAdapter = new ImageGridAdapter(requestManager, mAlbumConfig, mItemListener);
+        mFolderAdapter = new FolderListAdapter(requestManager, mFolderItemClickListener);
     }
 
     @Override

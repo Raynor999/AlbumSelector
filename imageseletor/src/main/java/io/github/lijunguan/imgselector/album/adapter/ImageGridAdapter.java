@@ -1,6 +1,5 @@
 package io.github.lijunguan.imgselector.album.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,8 +15,8 @@ import java.util.List;
 import io.github.lijunguan.imgselector.AlbumConfig;
 import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
-import io.github.lijunguan.imgselector.model.entity.ImageInfo;
 import io.github.lijunguan.imgselector.album.AlbumFragment;
+import io.github.lijunguan.imgselector.model.entity.ImageInfo;
 
 import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
 
@@ -34,14 +33,14 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private List<ImageInfo> mData = Collections.emptyList();
 
-    private Context mContext;
+    private final RequestManager mRequestManager;
 
     private AlbumConfig mAlbumConfig;
 
     private AlbumFragment.ImageItemListener mListener;
 
-    public ImageGridAdapter(Context context, AlbumConfig albumConfig, AlbumFragment.ImageItemListener listener) {
-        mContext = checkNotNull(context);
+    public ImageGridAdapter(RequestManager requestManager, AlbumConfig albumConfig, AlbumFragment.ImageItemListener listener) {
+        mRequestManager = checkNotNull(requestManager);
         mAlbumConfig = checkNotNull(albumConfig);
         mListener = listener;
     }
@@ -53,7 +52,6 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
 
-
     @SuppressWarnings("SuspiciousNameCombination")
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -62,12 +60,12 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         View rootView;
         if (viewType == NORMAL_ITEM) {
-            rootView = LayoutInflater.from(mContext).inflate(R.layout.item_image_grid, parent, false);
+            rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_image_grid, parent, false);
             rootView.getLayoutParams().height = itemWidth; //构建正方形Item布局
             return new ImageViewHolder(rootView);
         } else {
             //inflate 拍照 item
-            rootView = LayoutInflater.from(mContext).inflate(R.layout.item_camera, parent, false);
+            rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_camera, parent, false);
             rootView.getLayoutParams().height = itemWidth;
             rootView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -82,7 +80,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder,  int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         if (isNormalItem(position)) {
             final ImageViewHolder imgHolder = (ImageViewHolder) holder;
             final ImageInfo imageInfo = getItem(position);
@@ -97,7 +95,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                             mListener.onSelectedImageClick(imageInfo, mAlbumConfig.getMaxCount(), imgHolder.getAdapterPosition());
                             imgHolder.mMaskView.setVisibility(View.VISIBLE);
                         } else {
-                            mListener.onUnSelectedImageClick(imageInfo,imgHolder.getAdapterPosition());
+                            mListener.onUnSelectedImageClick(imageInfo, imgHolder.getAdapterPosition());
                             imgHolder.mMaskView.setVisibility(View.GONE);
                         }
                     }
@@ -122,8 +120,9 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 }
             });
 
-            Glide.with(mContext)
+            mRequestManager
                     .load(imageInfo.getPath())
+                    .asBitmap()
                     .placeholder(R.drawable.placeholder)
                     .into(imgHolder.mImageView);
         }
