@@ -63,8 +63,7 @@ public class BaseActivity extends AppCompatActivity {
 
     /**
      * Android6.0 动态申请权限，如果这个permission已经被用户拒绝过，
-     * 则弹出一个对话框，显示rationale内容（解释为什么要申请该权限），  否则 立即申请权限。
-     *
+     * 则弹出一个对话框，显示rationale内容（解释为什么要申请该权限），  否则 立即申请权限
      * @param permission  要申请的权限
      * @param rationale   申请权限原因描述
      * @param requestCode

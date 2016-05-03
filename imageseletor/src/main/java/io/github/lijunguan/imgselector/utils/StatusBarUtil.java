@@ -69,7 +69,9 @@ public class StatusBarUtil {
      */
     private static void setRootView(Activity activity) {
         ViewGroup rootView = (ViewGroup) ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0);
-        rootView.setFitsSystemWindows(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            rootView.setFitsSystemWindows(true);
+        }
         rootView.setClipToPadding(true);
     }
 

@@ -19,9 +19,6 @@ public class FileUtils {
     private static final String JPEG_FILE_SUFFIX = ".jpg";
 
 
-
-
-
     public static File createTmpFile(Context context) throws IOException {
         File dir;
         if (TextUtils.equals(Environment.getExternalStorageState(), Environment.MEDIA_MOUNTED)) {
@@ -71,9 +68,7 @@ public class FileUtils {
         String externalStorageState;
         try {
             externalStorageState = Environment.getExternalStorageState();
-        } catch (NullPointerException e) { // (sh)it happens (Issue #660)
-            externalStorageState = "";
-        } catch (IncompatibleClassChangeError e) { // (sh)it happens too (Issue #989)
+        } catch (NullPointerException | IncompatibleClassChangeError e) { // (sh)it happens (Issue #660)
             externalStorageState = "";
         }
         if (preferExternal && MEDIA_MOUNTED.equals(externalStorageState) && hasExternalStoragePermission(context)) {
@@ -88,27 +83,6 @@ public class FileUtils {
         }
         return appCacheDir;
     }
-
-    /**
-     * Returns individual application cache directory (for only ImageInfo caching from ImageLoader). Cache directory will be
-     * created on SD card <i>("/Android/data/[app_package_name]/cache/uil-images")</i> if card is mounted and app has
-     * appropriate permission. Else - Android defines cache directory on device's file system.
-     *
-     * @param context  Application context
-     * @param cacheDir Cache directory path (e.g.: "AppCacheDir", "AppDir/cache/images")
-     * @return Cache {@link File directory}
-     */
-    public static File getIndividualCacheDirectory(Context context, String cacheDir) {
-        File appCacheDir = getCacheDirectory(context);
-        File individualCacheDir = new File(appCacheDir, cacheDir);
-        if (!individualCacheDir.exists()) {
-            if (!individualCacheDir.mkdir()) {
-                individualCacheDir = appCacheDir;
-            }
-        }
-        return individualCacheDir;
-    }
-
 
     private static File getExternalCacheDir(Context context) {
         File dataDir = new File(new File(Environment.getExternalStorageDirectory(), "Android"), "data");

@@ -8,7 +8,7 @@ import android.support.annotation.ColorInt;
  * Created by lijunguan on 2016/4/21.
  * emial: lijunguan199210@gmail.com
  * blog: https://lijunguan.github.io
- * <p>
+ *
  * 图片选择器配置
  */
 public class AlbumConfig implements Parcelable {

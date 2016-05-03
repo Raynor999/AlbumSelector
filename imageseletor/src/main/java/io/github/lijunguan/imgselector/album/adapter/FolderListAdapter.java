@@ -55,7 +55,7 @@ public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.Fo
 
         mRequestManager
                 .load(floder.getCover().getPath())
-                .asBitmap()git
+                .asBitmap()
                 .into(holder.mCoverView);
         holder.mFolderName.setText(floder.getFloderName());
         holder.mFolderSize.setText(holder.itemView.getContext()

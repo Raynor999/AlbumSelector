@@ -11,7 +11,6 @@ public class KLog {
     public static final String NULL = "null";
 
 
-
     public static final int V = 0x1;
     public static final int D = 0x2;
     public static final int I = 0x3;
@@ -130,12 +129,9 @@ public class KLog {
         String methodName = stackTrace[index].getMethodName();
         int lineNumber = stackTrace[index].getLineNumber();
         String methodNameShort = methodName.substring(0, 1).toUpperCase() + methodName.substring(1);
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[ (").append(className).append(":").append(lineNumber).append(")#").append(methodNameShort).append(" ] ");
-
         String tag = (tagStr == null ? className : tagStr);
         String msg = (objects == null) ? NULL_TIPS : getObjectsString(objects);
-        String headString = stringBuilder.toString();
+        String headString = "[ (" + className + ":" + lineNumber + ")#" + methodNameShort + " ] ";
 
         return new String[]{tag, msg, headString};
     }
