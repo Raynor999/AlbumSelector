@@ -124,6 +124,12 @@
             android:orientation="horizontal"
             android:paddingLeft="5dp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/label_config_toolbar"
+                android:textAppearance="?android:textAppearanceSmall" />
 
             <RadioButton
                 android:id="@+id/radio_red"
@@ -152,8 +158,42 @@
                 android:layout_height="wrap_content"
                 android:text="橘色"
                 android:textAppearance="?android:textAppearanceMedium" />
-
         </RadioGroup>
+
+        <RelativeLayout
+            android:id="@+id/rl_avator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/iv_avator"
+                android:layout_width="80dp"
+                android:layout_height="80dp" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@id/iv_avator"
+                android:text="头像"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView"
+                android:layout_marginLeft="6dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/iv_avator"
+                android:text="追求卓越，成功就会在不经意追上你。"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+
+        </RelativeLayout>
 
         <FrameLayout
             android:layout_width="match_parent"

@@ -66,7 +66,7 @@ dependencies {
 def siteUrl = 'https://github.com/lijunguan/AlbumSelector'    // project homepage
 def gitUrl = 'https://github.com/lijunguan/AlbumSelector.git' // project git
 
-version = "0.1.0"
+version = "1.0.1"
 
 group = "com.lijunguan"
 

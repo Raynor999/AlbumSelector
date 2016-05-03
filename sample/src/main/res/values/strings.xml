@@ -8,4 +8,5 @@
     <string name="lable_show_carmera">显示相机</string>
     <string name="hint_max_count">最大可选择数量</string>
     <string name="hint_grid_columns">图片Grid列数</string>
+    <string name="label_config_toolbar">配置toolbar颜色</string>
 </resources>
