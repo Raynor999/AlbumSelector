@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mRecyclerView.addItemDecoration(new GridDividerDecorator(this));
-        mAdapter = new SelectedImgAdapter();
+        mAdapter = new SelectedImgAdapter(Glide.with(this));
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -161,13 +162,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class SelectedImgAdapter extends RecyclerView.Adapter<SelectedImgAdapter.ImgViewHolder> {
+    static class SelectedImgAdapter extends RecyclerView.Adapter<SelectedImgAdapter.ImgViewHolder> {
 
         List<String> mData = new ArrayList<>();
 
+        private RequestManager mRequestManager;
+
+        public SelectedImgAdapter(RequestManager requestManager) {
+            this.mRequestManager = requestManager;
+        }
+
+        @SuppressWarnings("ReturnOfInnerClass")
         @Override
         public ImgViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            ImageView imageView = new ImageView(MainActivity.this);
+            ImageView imageView = new ImageView(parent.getContext());
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setLayoutParams(new GridLayoutManager.LayoutParams(parent.getWidth() / 3, parent.getWidth() / 3));
             return new ImgViewHolder(imageView);
@@ -175,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(ImgViewHolder holder, int position) {
-            Glide.with(MainActivity.this)
+            mRequestManager
                     .load(mData.get(position))
                     .into((ImageView) holder.itemView);
         }
@@ -185,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
             return mData.size();
         }
 
-        class ImgViewHolder extends RecyclerView.ViewHolder {
+        static class ImgViewHolder extends RecyclerView.ViewHolder {
 
             public ImgViewHolder(View itemView) {
                 super(itemView);
