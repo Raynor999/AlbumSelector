@@ -16,10 +16,10 @@
 
 [Apk_Demp DownLoad](https://raw.githubusercontent.com/lijunguan/AlbumSelector/master/screenshot/sample-imagselector.apk)
 
-    <div class='row'>
-        <img src='https://raw.githubusercontent.com/lijunguan/AlbumSelector/master/screenshot/ScrennShot1.gif' width="300px" style='border: #f1f1f1 solid 1px'/>
-        <img src='https://raw.githubusercontent.com/lijunguan/AlbumSelector/master/screenshot/ScrennShot2.gif' width="300px" style='border: #f1f1f1 solid 1px'/>
-    </div>
+<div class='row'>
+    <img src='https://raw.githubusercontent.com/lijunguan/AlbumSelector/master/screenshot/ScrennShot1.gif' width="300px" style='border: #f1f1f1 solid 1px'/>
+    <img src='https://raw.githubusercontent.com/lijunguan/AlbumSelector/master/screenshot/ScrennShot2.gif' width="300px" style='border: #f1f1f1 solid 1px'/>
+</div>
 
 ## Gradle Dependency Or Maven
 
