@@ -14,12 +14,15 @@
 
 ## ScreenShot
 
-[Apk_Demp DownLoad](https://raw.githubusercontent.com/lijunguan/AlbumSelector/master/screenshot/sample-imagselector.apk)
+[Apk_Demp DownLoad](https://raw.githubusercontent.com/lijunguan/AlbumSelector/master/screenshot/sample-imageselector.apk)
 
-    <div class='row'>
-        <img src='https://raw.githubusercontent.com/lijunguan/AlbumSelector/master/screenshot/ScrennShot1.gif' width="300px" style='border: #f1f1f1 solid 1px'/>
-        <img src='https://raw.githubusercontent.com/lijunguan/AlbumSelector/master/screenshot/ScrennShot2.gif' width="300px" style='border: #f1f1f1 solid 1px'/>
-    </div>
+
+<img src='https://raw.githubusercontent.com/lijunguan/AlbumSelector/master/screenshot/ScrennShot1.gif' width="300px" style='border: #f1f1f1 solid 1px'/>
+
+### Android6.0 运行时权限
+
+<img src='https://raw.githubusercontent.com/lijunguan/AlbumSelector/master/screenshot/ScrennShot2.gif' width="300px" style='border: #f1f1f1 solid 1px'/>
+
 
 ## Gradle Dependency Or Maven
 
@@ -34,10 +37,10 @@
 
 ```groovy
     <dependency>
-  <groupId>com.lijunguan</groupId>
-  <artifactId>imageseletor</artifactId>
-  <version>1.0.1</version>
-  <type>pom</type>
+        <groupId>com.lijunguan</groupId>
+        <artifactId>imageseletor</artifactId>
+        <version>1.0.1</version>
+        <type>pom</type>
     </dependency>
 ```
 
@@ -88,6 +91,110 @@
 - Toolbar和状态栏颜色
     默认： 蓝色#3F51B5  状态栏颜色需API>19 , 4.4 渐变色，5.0以上为纯色填充
 
+## 项目MVP简介 
+
+如果觉得这个项目还可以，请给个start支持一下，谢谢啦，希望和各位同道互相学习交流，下面简单介绍一下项目。 后期计划写一篇博客详细总结一下项目，会给出自己详尽的设计构想和代码组织逻辑和UML图，渴望得到大家的指点，不断改进。
+
+[Google官方MVP架构](https://github.com/googlesamples/android-architecture)官方称该项目为Android架构蓝图，与很多我见过的MVP架构不尽相同，不过看了官方的架构，自我感觉Google的架构方式合理很多，更清晰明了， 用XXXContract来统一管理Presenter和View的所有接口，一个Contract可以对应一个业务逻辑，清晰明了易于维护。
+
+### 项目中相册界面的Contract
+
+```java
+public interface AlbumContract {
+
+    interface View extends BaseView<Presenter> {
+
+        void showEmptyView(@Nullable CharSequence message);
+
+        void showImages(@NonNull List<ImageInfo> imageInfos);
+
+        void showSystemCamera();
+
+        void showFolderList();
+
+        void hideFolderList();
+
+        void initFolderList(@NonNull List<AlbumFolder> folders);
+
+        void showImageDetailUi(int currentPosition); // 打开ImagedetailFragment
+
+        void showImageCropUi(@NonNull String imagePath);// 启动裁剪图片的Activity
+
+        void showOutOfRange(int position); //提示用户图片选择数量已经达到上限
+
+        void showSelectedCount(int count);
+
+        /**
+         * 图片选择完成，返回选择数据给等待结果的Activity，
+         * 根据refreshMedia状态判断是否将相机拍摄或裁剪的图片加入媒体库
+         *
+         * @param imagePaths   选择的图片路径集合
+         * @param refreshMedia 是否刷新系统媒体库 true 将通过相机拍摄的照片加入Media.Store
+         */
+        void selectComplete(@NonNull List<String> imagePaths, boolean refreshMedia);
+
+        /**
+         * 同步  ImageDetailFragment 界面Checkbox选中状态
+         * @param position
+         */
+        void syncCheckboxStatus(int position);
+
+    }
+
+    interface Presenter extends ImageContract.Presenter {
+        /**
+         * 切换相册目录，刷新Grid显示
+         *
+         * @param folder 选择的相册目录实体
+         */
+        void swtichFloder(@NonNull AlbumFolder folder);
+
+        void previewImage(int position);
+
+        void cropImage(ImageInfo imageInfo);
+
+        /**
+         * 将用户选择的图片结果返回
+         */
+        void returnResult();
+
+        void openCamera();
+
+        /**
+         * 系统相机Activity 返回结果    * {@link Activity#onActivityResult(int, int, Intent)}.
+         * @param mTmpFile 保存相机拍摄图片的零时文件
+         */
+        void result(int requestCode, int resultCode, Intent data, File mTmpFile);
+
+        void clearCache();
+    }
+
+}
+```
+
+```java
+public interface ImageContract {
+
+    interface View extends BaseView<Presenter> {
+
+        void updateIndicator();
+
+        void showOutOfRange(int position);
+
+        void showSelectedCount(int count);
+    }
+
+    interface Presenter extends BasePresenter {
+
+        void selectImage(@NonNull ImageInfo imageInfo, int maxCount, int position);
+
+        void unSelectImage(@NonNull ImageInfo imageInfo, int position);
+    }
+
+}
+```
+
+由于架构的引入，代码肯定是额外增加的了，不够从上面两个XXXContact类，我们就能看出优势所在，由于界限非常清晰，后期的扩展维护都非常简单，从分体现了单一职责的设计思想。最终要的是可测试性，UI层和业务层可以分别进行单元测试。计划在下一个版本学习官方案例，加入测试案例。
 
 ## License
 
