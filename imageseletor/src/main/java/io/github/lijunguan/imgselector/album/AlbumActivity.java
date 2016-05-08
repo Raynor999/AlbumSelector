@@ -1,5 +1,6 @@
 package io.github.lijunguan.imgselector.album;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -86,7 +87,7 @@ public class AlbumActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        KLog.d(TAG, "=======onBackPressed========");
+
         AlbumFragment albumFragment =
                 (AlbumFragment) getSupportFragmentManager().findFragmentByTag(AlbumFragment.TAG);
 
@@ -110,6 +111,13 @@ public class AlbumActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        KLog.d(TAG, "=======onDestroy========");
         mAlbumPresenter.clearCache();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration config) {
+        super.onConfigurationChanged(config);
+        KLog.d("=========onConfigurationChanged===========");
     }
 }

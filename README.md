@@ -27,7 +27,7 @@
 
 ```groovy
     dependencies {
-            compile "com.lijunguan:imageseletor:1.0.1"
+            compile "com.lijunguan:imageseletor:1.0.2"
     }
 
 ```
@@ -36,7 +36,7 @@
     <dependency>
   <groupId>com.lijunguan</groupId>
   <artifactId>imageseletor</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <type>pom</type>
     </dependency>
 ```

@@ -73,7 +73,7 @@ public class AlbumPresenter implements AlbumContract.Presenter {
                         mAlbumView.showImageCropUi(mTmpFile.getPath());
                         return;
                     }
-                    mAlbumRepository.addSelect(mTmpFile.getAbsolutePath());
+                    mAlbumRepository.addSelect(mTmpFile.getPath());
                     mAlbumView.selectComplete(mAlbumRepository.getSelectedResult(), true);
                 } else if (mTmpFile != null && mTmpFile.exists()) {
                     //出错时，删除零时文件,

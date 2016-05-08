@@ -10,10 +10,14 @@
         android:supportsRtl="true">
         <activity
             android:name=".album.AlbumActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
             android:label="@string/album_activity_title"
             android:theme="@style/AlbumTheme" />
 
-        <activity android:name=".cropimage.CropActivity"
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".cropimage.CropActivity"
             android:label="@string/crop_activity_title"
             android:theme="@style/AlbumTheme" />
     </application>
