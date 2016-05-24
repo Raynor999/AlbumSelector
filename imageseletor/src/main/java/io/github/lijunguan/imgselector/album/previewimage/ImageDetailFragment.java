@@ -187,6 +187,7 @@ public class ImageDetailFragment extends BaseFragment
                     .load(mData.get(position).getPath())
                     .asBitmap()
                     .fitCenter()
+                    .thumbnail(0.2f)
                     .into(photoView);
             container.addView(photoView);
             return photoView;

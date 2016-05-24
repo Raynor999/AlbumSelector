@@ -125,6 +125,8 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     .asBitmap()
                     .placeholder(R.drawable.placeholder)
                     .into(imgHolder.mImageView);
+
+
         }
 
     }

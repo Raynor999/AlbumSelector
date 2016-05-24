@@ -93,6 +93,7 @@ public class AlbumFragment extends BaseFragment
      * 当前选择的相册目录下的 图片集合
      */
     private ArrayList<ImageInfo> mImages;
+    private RequestManager mRequestManager;
 
 
     public static AlbumFragment newInstance() {
@@ -113,9 +114,9 @@ public class AlbumFragment extends BaseFragment
         //改用接口监听 而不是让Adapter持有Presenter对象，
         // 1.更符合MVP架构 2.解决当程序处于后台，系统因资源不足杀死App后，复原时会先执行Fragment的onCreate()方法
         //再执行 Activity的onCreate()方法，导致mPresenter throw NullPointerException异常
-        RequestManager requestManager = Glide.with(this);
-        mImagesAdapter = new ImageGridAdapter(requestManager, mAlbumConfig, mItemListener);
-        mFolderAdapter = new FolderListAdapter(requestManager, mFolderItemClickListener);
+        mRequestManager = Glide.with(this);
+        mImagesAdapter = new ImageGridAdapter(mRequestManager, mAlbumConfig, mItemListener);
+        mFolderAdapter = new FolderListAdapter(mRequestManager, mFolderItemClickListener);
     }
 
     @Override
