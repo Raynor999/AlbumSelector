@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
+
 def cfg = rootProject.ext.configuration
 
 android {
@@ -59,6 +60,7 @@ dependencies {
     compile 'konifar:fab-transformation:1.0.0'
     compile 'com.github.chrisbanes:PhotoView:1.2.6'
 }
+
 
 
 
@@ -133,29 +135,24 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
 }
-
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
-
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
-
-javadoc {
-    options{
-        encoding "UTF-8"
-        charSet 'UTF-8'
-        author true
-        version true
-        links "http://docs.oracle.com/javase/8/docs/api"
-        title "io.github.lijunguan"
-    }
-}
-
 artifacts {
     archives javadocJar
     archives sourcesJar
 }
+
+javadoc { //jav doc采用utf-8编码否则会报“GBK的不可映射字符”错误
+    options{
+        encoding "UTF-8"
+        charSet 'UTF-8'
+    }
+}
+
+tasks.withType(JavaCompile) { options.encoding = "UTF-8" }
