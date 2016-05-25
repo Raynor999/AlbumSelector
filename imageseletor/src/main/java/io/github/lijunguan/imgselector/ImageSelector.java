@@ -61,6 +61,8 @@ public class ImageSelector {
     }
     private ImageSelector() {
         mConfig = new AlbumConfig();
+        //init log utils by BulidConfig files
+//        KLog.init(BuildConfig.LOG_DEBUG);
     }
 
     public ImageSelector setMaxCount(int maxCount) {

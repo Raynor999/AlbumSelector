@@ -24,8 +24,8 @@ public class CropActivity extends BaseActivity implements CropFragment.CropImage
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crop);
+        String iamgePath = getIntent().getStringExtra(CropFragment.ARG_IMAGE_PATH);
         if (savedInstanceState == null) {
-            String iamgePath = getIntent().getStringExtra(CropFragment.ARG_IMAGE_PATH);
             mCropFragment = CropFragment.newInstance(iamgePath);
             ActivityUtils.addFragmentToActivity(
                     getSupportFragmentManager(),

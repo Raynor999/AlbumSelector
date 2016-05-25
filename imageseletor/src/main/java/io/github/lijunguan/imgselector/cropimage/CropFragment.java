@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,7 +21,6 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import java.io.File;
 import java.io.IOException;
 
-import io.github.lijunguan.imgselector.BuildConfig;
 import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.cropimage.crop.CropView;
 import io.github.lijunguan.imgselector.utils.FileUtils;
@@ -115,6 +115,7 @@ public class CropFragment extends Fragment {
     }
 
     private void loadImage() {
+
         Glide.with(mContext)
                 .load(mImagePath)
                 .asBitmap()
@@ -142,9 +143,8 @@ public class CropFragment extends Fragment {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            if (BuildConfig.LOG_DEBUG) {
-                KLog.e("Error save cropImage file");
-            }
+            KLog.e("Error save cropImage file");
+
         }
     }
 
@@ -152,7 +152,7 @@ public class CropFragment extends Fragment {
         void onCropCompleted(String path);
     }
 
-    static class FillViewportTransformation extends BitmapTransformation {
+    class FillViewportTransformation extends BitmapTransformation {
 
         private final int viewportWidth;
         private final int viewportHeight;
@@ -165,8 +165,24 @@ public class CropFragment extends Fragment {
 
         @Override
         protected Bitmap transform(BitmapPool bitmapPool, Bitmap source, int outWidth, int outHeight) {
+
             int sourceWidth = source.getWidth();
             int sourceHeight = source.getHeight();
+            try {
+                ExifInterface exifInterface = new ExifInterface(mImagePath);
+                int exifWidth = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, ExifInterface.ORIENTATION_NORMAL);
+                int exifHeight = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_NORMAL);
+                if (exifHeight != 0 && exifWidth != 0) {
+                    sourceWidth = exifWidth;
+                    sourceHeight = exifHeight;
+                }
+                KLog.i("exif Width:" + sourceWidth + "|| exif Height:" + sourceHeight);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            KLog.i("sourceWidth:" + sourceWidth + "|| sourceHeight:" + sourceHeight);
+            KLog.i("viewportWidth:" + viewportWidth + "|| viewportHeight:" + viewportHeight);
 
             Rect target = computeTargetSize(sourceWidth, sourceHeight, viewportWidth, viewportHeight);
 

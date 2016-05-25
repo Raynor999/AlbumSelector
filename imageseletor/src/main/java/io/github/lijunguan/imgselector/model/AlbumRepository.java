@@ -50,7 +50,16 @@ public class AlbumRepository implements AlbumDataSource {
      */
     private String mGeneralFolderName;
 
-    private CursorLoader mLoader;
+
+    private final Context mAppContext;
+
+    private final static String[] IMAGE_PROJECTION = {
+            MediaStore.Images.Media.DATA,
+            MediaStore.Images.Media.DISPLAY_NAME,
+            MediaStore.Images.Media.DATE_ADDED,
+            MediaStore.Images.Media.MIME_TYPE,
+            MediaStore.Images.Media.SIZE,
+            MediaStore.Images.Media._ID};
 
     public static AlbumRepository getInstance(Context context) {
         if (mInstance == null) {
@@ -66,17 +75,10 @@ public class AlbumRepository implements AlbumDataSource {
 
     public AlbumRepository(Context context) {
 
-        String[] IMAGE_PROJECTION = {
-                MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.DISPLAY_NAME,
-                MediaStore.Images.Media.DATE_ADDED,
-                MediaStore.Images.Media.MIME_TYPE,
-                MediaStore.Images.Media.SIZE,
-                MediaStore.Images.Media._ID};
+
         mGeneralFolderName = context.getString(R.string.label_general_folder_name);
-        mLoader = new CursorLoader(context, MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                IMAGE_PROJECTION, null,
-                null, IMAGE_PROJECTION[2] + " DESC");
+        mAppContext = context.getApplicationContext();
+
     }
 
     //非空注解，参数都不能为空
@@ -93,7 +95,10 @@ public class AlbumRepository implements AlbumDataSource {
         loaderManager.initLoader(IMAGE_LOADER_ID, null, new LoaderManager.LoaderCallbacks<Cursor>() {
             @Override
             public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-                return mLoader;
+                return new CursorLoader(mAppContext, MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        IMAGE_PROJECTION, null,
+                        null, IMAGE_PROJECTION[2] + " DESC");
+
             }
 
             @Override
@@ -171,16 +176,14 @@ public class AlbumRepository implements AlbumDataSource {
      * @param path 文件路径
      * @return 如果mAlbumFloders集合中存在 改path路径的albumFolder则返回AlbumFloder ，否则返回null
      */
-    private AlbumFolder getFloderByPath(String path, List<AlbumFolder> albumFolders) {
-        AlbumFolder folder = null;
-        if (albumFolders != null) {
-            for (AlbumFolder floder : albumFolders) {
-                if (TextUtils.equals(floder.getPath(), path)) {
-                    return floder;
-                }
+    private AlbumFolder getFloderByPath(String path, @NonNull List<AlbumFolder> albumFolders) {
+        checkNotNull(albumFolders);
+        for (AlbumFolder floder : albumFolders) {
+            if (TextUtils.equals(floder.getPath(), path)) {
+                return floder;
             }
         }
-        return folder;
+        return null;
     }
 
 

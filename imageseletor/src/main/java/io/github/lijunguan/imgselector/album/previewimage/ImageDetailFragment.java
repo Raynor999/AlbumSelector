@@ -1,5 +1,7 @@
 package io.github.lijunguan.imgselector.album.previewimage;
 
+import android.graphics.Bitmap;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -12,6 +14,8 @@ import android.widget.CheckBox;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +25,7 @@ import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.base.BaseFragment;
 import io.github.lijunguan.imgselector.model.entity.ImageInfo;
+import io.github.lijunguan.imgselector.utils.KLog;
 import uk.co.senab.photoview.PhotoView;
 
 import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
@@ -186,8 +191,9 @@ public class ImageDetailFragment extends BaseFragment
             mRequestManager
                     .load(mData.get(position).getPath())
                     .asBitmap()
-                    .fitCenter()
-                    .thumbnail(0.2f)
+                    .transform(new MyFitCenter(Glide.get(container.getContext()).getBitmapPool()))
+//                    .centerCrop()
+//                    .thumbnail(0.2f)
                     .into(photoView);
             container.addView(photoView);
             return photoView;
@@ -200,6 +206,80 @@ public class ImageDetailFragment extends BaseFragment
 
         public ImageInfo getItem(int position) {
             return mData.get(position);
+        }
+    }
+
+
+    static class MyFitCenter extends BitmapTransformation {
+
+
+        public MyFitCenter(BitmapPool bitmapPool) {
+            super(bitmapPool);
+        }
+
+        @Override
+        protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+
+            if (toTransform.getWidth() == outWidth && toTransform.getHeight() == outHeight) {
+
+                KLog.v(TAG, "requested target size matches input, returning input");
+
+                return toTransform;
+            }
+            final float widthPercentage = outWidth / (float) toTransform.getWidth();
+            final float heightPercentage = outHeight / (float) toTransform.getHeight();
+            final float minPercentage = Math.min(widthPercentage, heightPercentage);
+
+            // take the floor of the target outWidth/outHeight, not round. If the matrix
+            // passed into drawBitmap rounds differently, we want to slightly
+            // overdraw, not underdraw, to avoid artifacts from bitmap reuse.
+            final int targetWidth = (int) (minPercentage * toTransform.getWidth());
+            final int targetHeight = (int) (minPercentage * toTransform.getHeight());
+
+            if (toTransform.getWidth() == targetWidth && toTransform.getHeight() == targetHeight) {
+
+                KLog.v(TAG, "adjusted target size matches input, returning input");
+
+                return toTransform;
+            }
+
+//            Bitmap.Config config = getSafeConfig(toTransform);
+//            Bitmap toReuse = pool.get(targetWidth, targetHeight, config);
+//            if (toReuse == null) {
+//                toReuse = Bitmap.createBitmap(targetWidth, targetHeight, config);
+//            }
+//            // We don't add or remove alpha, so keep the alpha setting of the Bitmap we were given.
+//            TransformationUtils.setAlpha(toTransform, toReuse);
+//
+//
+//            KLog.v(TAG, "request: " + outWidth + "x" + outHeight);
+//            KLog.v(TAG, "toTransform:   " + toTransform.getWidth() + "x" + toTransform.getHeight());
+//            KLog.v(TAG, "toReuse: " + toReuse.getWidth() + "x" + toReuse.getHeight());
+//            KLog.v(TAG, "minPct:   " + minPercentage);
+//
+//
+//            Canvas canvas = new Canvas(toReuse);
+//            Matrix matrix = new Matrix();
+//            matrix.setScale(minPercentage, minPercentage);
+//            Paint paint = new Paint(PAINT_FLAGS);
+//            canvas.drawBitmap(toTransform, matrix, paint);
+
+            return  Bitmap.createScaledBitmap(
+                    toTransform,
+                    targetWidth,
+                    targetHeight,
+                    true);
+        }
+
+        public static final int PAINT_FLAGS = Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG;
+
+        @Override
+        public String getId() {
+            return "MyFitCenter.com.bumptech.glide.load.resource.bitmap";
+        }
+
+        private Bitmap.Config getSafeConfig(Bitmap bitmap) {
+            return bitmap.getConfig() != null ? bitmap.getConfig() : Bitmap.Config.ARGB_8888;
         }
     }
 }
