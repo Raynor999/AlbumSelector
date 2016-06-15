@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.model;
+package io.github.lijunguan.imgselector.data;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -17,11 +17,11 @@ import java.util.List;
 import java.util.Map;
 
 import io.github.lijunguan.imgselector.R;
-import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
-import io.github.lijunguan.imgselector.model.entity.ImageInfo;
+import io.github.lijunguan.imgselector.data.entity.AlbumFolder;
+import io.github.lijunguan.imgselector.data.entity.ImageInfo;
 import io.github.lijunguan.imgselector.utils.KLog;
 
-import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
+import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
 
 
 /**
@@ -192,6 +192,8 @@ public class AlbumRepository implements AlbumDataSource {
         String displayName = data.getString(data.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
         long addedTime = data.getLong(data.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED));
         long imageSize = data.getLong(data.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE));
+
+
         return new ImageInfo(imgPath, displayName, addedTime, imageSize);
     }
 

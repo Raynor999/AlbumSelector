@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.album;
+package io.github.lijunguan.imgselector.selectimage;
 
 import android.Manifest;
 import android.app.Activity;
@@ -34,35 +34,38 @@ import java.util.List;
 import io.github.lijunguan.imgselector.AlbumConfig;
 import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
-import io.github.lijunguan.imgselector.album.adapter.FolderListAdapter;
-import io.github.lijunguan.imgselector.album.adapter.ImageGridAdapter;
-import io.github.lijunguan.imgselector.album.previewimage.ImageDetailFragment;
-import io.github.lijunguan.imgselector.album.previewimage.ImageDetailPresenter;
-import io.github.lijunguan.imgselector.album.widget.GridDividerDecorator;
+import io.github.lijunguan.imgselector.selectimage.adapter.FolderListAdapter;
+import io.github.lijunguan.imgselector.selectimage.adapter.ImageGridAdapter;
+import io.github.lijunguan.imgselector.previewimage.ImageDetailFragment;
+import io.github.lijunguan.imgselector.previewimage.ImageDetailPresenter;
+import io.github.lijunguan.imgselector.selectimage.widget.GridDividerDecorator;
 import io.github.lijunguan.imgselector.base.BaseFragment;
 import io.github.lijunguan.imgselector.cropimage.CropActivity;
 import io.github.lijunguan.imgselector.cropimage.CropFragment;
-import io.github.lijunguan.imgselector.model.AlbumRepository;
-import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
-import io.github.lijunguan.imgselector.model.entity.ImageInfo;
+import io.github.lijunguan.imgselector.data.AlbumRepository;
+import io.github.lijunguan.imgselector.data.entity.AlbumFolder;
+import io.github.lijunguan.imgselector.data.entity.ImageInfo;
 import io.github.lijunguan.imgselector.utils.ActivityUtils;
 import io.github.lijunguan.imgselector.utils.FileUtils;
+import io.github.lijunguan.imgselector.utils.KLog;
 
-import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
+import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
 
 /**
  * Created by lijunguan on 2016/4/21.
  * emial: lijunguan199210@gmail.com
  * blog: https://lijunguan.github.io
  */
-public class AlbumFragment extends BaseFragment
-        implements AlbumContract.View, View.OnClickListener {
+public class SelectFragment extends BaseFragment
+        implements SelectContract.View, View.OnClickListener {
 
-    public static final String TAG = AlbumFragment.class.getSimpleName();
+    public static final String TAG = SelectFragment.class.getSimpleName();
 
     public static final int REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101;
 
-    private AlbumContract.Presenter mPresenter;
+    public static final String TEMP_FILE = "tempFiel";
+
+    private SelectContract.Presenter mPresenter;
 
     private AlbumConfig mAlbumConfig;
     /**
@@ -96,8 +99,8 @@ public class AlbumFragment extends BaseFragment
     private RequestManager mRequestManager;
 
 
-    public static AlbumFragment newInstance() {
-        return new AlbumFragment();
+    public static SelectFragment newInstance() {
+        return new SelectFragment();
     }
 
     @Override
@@ -106,6 +109,7 @@ public class AlbumFragment extends BaseFragment
 
         if (savedInstanceState != null) {
             mAlbumConfig = savedInstanceState.getParcelable(ImageSelector.ARG_ALBUM_CONFIG);
+            mTmpFile = (File) savedInstanceState.getSerializable(TEMP_FILE);
             ImageSelector.getInstance().setConfig(mAlbumConfig);
         } else {
             mAlbumConfig = ImageSelector.getInstance().getConfig();
@@ -123,6 +127,7 @@ public class AlbumFragment extends BaseFragment
     public void onSaveInstanceState(Bundle outState) {
         //保存配置参数,防止Application被kill后，恢复Fragment时，配置参数发送异常
         outState.putParcelable(ImageSelector.ARG_ALBUM_CONFIG, mAlbumConfig);
+        outState.putSerializable(TEMP_FILE, mTmpFile);
     }
 
     /**
@@ -247,7 +252,7 @@ public class AlbumFragment extends BaseFragment
     }
 
     @Override
-    public void setPresenter(AlbumContract.Presenter presenter) {
+    public void setPresenter(SelectContract.Presenter presenter) {
         mPresenter = checkNotNull(presenter);
     }
 
@@ -335,7 +340,7 @@ public class AlbumFragment extends BaseFragment
             new ImageDetailPresenter(
                     albumRepository,
                     fragment,
-                    AlbumFragment.this);
+                    SelectFragment.this);
 
             ActivityUtils.addFragmentToActivity(mContext.getSupportFragmentManager(),
                     fragment,
@@ -366,6 +371,7 @@ public class AlbumFragment extends BaseFragment
             mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(mTmpFile)));
         }
         mContext.setResult(Activity.RESULT_OK, data);
+        KLog.i("selectResul:" + data.getStringArrayListExtra(ImageSelector.SELECTED_RESULT).get(0));
         mContext.finish();
     }
 

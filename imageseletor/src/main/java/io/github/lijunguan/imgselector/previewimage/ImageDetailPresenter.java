@@ -1,12 +1,12 @@
-package io.github.lijunguan.imgselector.album.previewimage;
+package io.github.lijunguan.imgselector.previewimage;
 
 import android.support.annotation.NonNull;
 
-import io.github.lijunguan.imgselector.album.AlbumContract;
-import io.github.lijunguan.imgselector.model.AlbumRepository;
-import io.github.lijunguan.imgselector.model.entity.ImageInfo;
+import io.github.lijunguan.imgselector.selectimage.SelectContract;
+import io.github.lijunguan.imgselector.data.AlbumRepository;
+import io.github.lijunguan.imgselector.data.entity.ImageInfo;
 
-import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
+import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
 
 /**
  * Created by lijunguan on 2016/4/24.
@@ -16,16 +16,16 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
 
     private ImageContract.View mImageDetailView;
 
-    private AlbumContract.View mAlbumView;
+    private SelectContract.View mAlbumView;
 
     public ImageDetailPresenter(
             @NonNull AlbumRepository albumRepository,
             @NonNull ImageContract.View imageDetailView,
-            @NonNull AlbumContract.View albumView) {
+            @NonNull SelectContract.View albumView) {
 
         mImageDetailView = checkNotNull(imageDetailView, "ImageContract.View  cannt be null");
         mAlbumRepository = checkNotNull(albumRepository, "AlbumRepository cannt be null");
-        mAlbumView = checkNotNull(albumView,"AlbumContract.View cannt be null");
+        mAlbumView = checkNotNull(albumView,"SelectContract.View cannt be null");
         mImageDetailView.setPresenter(this);
     }
 

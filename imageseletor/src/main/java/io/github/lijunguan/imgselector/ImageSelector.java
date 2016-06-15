@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 
-import io.github.lijunguan.imgselector.album.AlbumActivity;
+import io.github.lijunguan.imgselector.selectimage.SelectActivity;
+import io.github.lijunguan.imgselector.utils.CheckUtils;
+import io.github.lijunguan.imgselector.utils.KLog;
 
-import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
+import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
 
 /**
  * Created by lijunguan on 2016/4/21.
@@ -62,11 +64,13 @@ public class ImageSelector {
     private ImageSelector() {
         mConfig = new AlbumConfig();
         //init log utils by BulidConfig files
-//        KLog.init(BuildConfig.LOG_DEBUG);
+        System.out.println(BuildConfig.LOG_DEBUG);
+        KLog.init(BuildConfig.LOG_DEBUG);
+
     }
 
     public ImageSelector setMaxCount(int maxCount) {
-        checkNotNull(maxCount);
+        CheckUtils.checkArgument(maxCount < Integer.MAX_VALUE,"you set 'MaxCount' too large");
         mConfig.setMaxCount(maxCount);
         return this;
     }
@@ -96,7 +100,7 @@ public class ImageSelector {
     }
 
     public void startSelect(@NonNull Activity context) {
-        Intent intent = new Intent(context, AlbumActivity.class);
+        Intent intent = new Intent(context, SelectActivity.class);
         intent.putExtra(ImageSelector.ARG_ALBUM_CONFIG, mConfig);
         context.startActivityForResult(intent, REQUEST_SELECT_IMAGE);
     }

@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.album;
+package io.github.lijunguan.imgselector.selectimage;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,10 +8,10 @@ import android.support.annotation.Nullable;
 import java.io.File;
 import java.util.List;
 
-import io.github.lijunguan.imgselector.album.previewimage.ImageContract;
+import io.github.lijunguan.imgselector.previewimage.ImageContract;
 import io.github.lijunguan.imgselector.base.BaseView;
-import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
-import io.github.lijunguan.imgselector.model.entity.ImageInfo;
+import io.github.lijunguan.imgselector.data.entity.AlbumFolder;
+import io.github.lijunguan.imgselector.data.entity.ImageInfo;
 
 /**
  * Created by lijunguan on 2016/4/19.
@@ -19,7 +19,7 @@ import io.github.lijunguan.imgselector.model.entity.ImageInfo;
  * blog: https://lijunguan.github.io
  * 指定 View 和 Presenter之间的关系，统一声明便于查看和管理接口方法
  */
-public interface AlbumContract {
+public interface SelectContract {
 
     interface View extends BaseView<Presenter> {
 

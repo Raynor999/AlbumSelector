@@ -23,10 +23,11 @@ import java.io.IOException;
 
 import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.cropimage.crop.CropView;
+import io.github.lijunguan.imgselector.utils.BitmapUtils;
 import io.github.lijunguan.imgselector.utils.FileUtils;
 import io.github.lijunguan.imgselector.utils.KLog;
 
-import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
+import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
 
 /**
  * Created by lijunguan on 2016/4/26.
@@ -72,6 +73,7 @@ public class CropFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         mListener = null;
+        BitmapUtils.recycleImageView(mCropView);
     }
 
     @Override
@@ -85,10 +87,9 @@ public class CropFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = getLayoutInflater(savedInstanceState).inflate(R.layout.crop_view, container, false);
-        mCropView = (CropView) rootView;
+        mCropView = (CropView) getLayoutInflater(savedInstanceState).inflate(R.layout.crop_view, container, false);
         performLoad(); //加载图片
-        return rootView;
+        return mCropView;
     }
 
     void performLoad() {
@@ -165,20 +166,29 @@ public class CropFragment extends Fragment {
 
         @Override
         protected Bitmap transform(BitmapPool bitmapPool, Bitmap source, int outWidth, int outHeight) {
-
             int sourceWidth = source.getWidth();
             int sourceHeight = source.getHeight();
-            try {
-                ExifInterface exifInterface = new ExifInterface(mImagePath);
-                int exifWidth = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, ExifInterface.ORIENTATION_NORMAL);
-                int exifHeight = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_NORMAL);
-                if (exifHeight != 0 && exifWidth != 0) {
-                    sourceWidth = exifWidth;
-                    sourceHeight = exifHeight;
+            Bitmap newSource = null;
+            if (BitmapUtils.isRotationSupported(mImagePath)) { //判断是否是相机拍摄的图片
+                try {
+                    ExifInterface exifInterface = new ExifInterface(mImagePath);
+                    int bitmapDegree = BitmapUtils.getBitmapDegree(exifInterface);
+                    if (bitmapDegree != 0) {
+                        //修复图片旋转角度
+                        KLog.d("bitmapDegree:" + bitmapDegree);
+                        newSource = BitmapUtils.rotateBitmapByDegree(source,bitmapDegree);
+                    }
+                    int exifWidth = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, ExifInterface.ORIENTATION_NORMAL);
+                    int exifHeight = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_NORMAL);
+                    if (exifHeight != 0 && exifWidth != 0) {
+                        sourceWidth = exifWidth;
+                        sourceHeight = exifHeight;
+                    }
+
+                    KLog.i("exif Width:" + sourceWidth + "|| exif Height:" + sourceHeight);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                KLog.i("exif Width:" + sourceWidth + "|| exif Height:" + sourceHeight);
-            } catch (IOException e) {
-                e.printStackTrace();
             }
 
             KLog.i("sourceWidth:" + sourceWidth + "|| sourceHeight:" + sourceHeight);
@@ -190,7 +200,7 @@ public class CropFragment extends Fragment {
             int targetHeight = target.height();
 
             return Bitmap.createScaledBitmap(
-                    source,
+                    newSource != null ? newSource : source,
                     targetWidth,
                     targetHeight,
                     true);
@@ -217,6 +227,6 @@ public class CropFragment extends Fragment {
             final int recommendedHeight = (int) ((sourceHeight * scale) + 0.5f);
             return new Rect(0, 0, recommendedWidth, recommendedHeight);
         }
-
     }
+
 }

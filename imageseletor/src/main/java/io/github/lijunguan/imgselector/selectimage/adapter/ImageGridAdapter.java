@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.album.adapter;
+package io.github.lijunguan.imgselector.selectimage.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,10 +15,10 @@ import java.util.List;
 import io.github.lijunguan.imgselector.AlbumConfig;
 import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
-import io.github.lijunguan.imgselector.album.AlbumFragment;
-import io.github.lijunguan.imgselector.model.entity.ImageInfo;
+import io.github.lijunguan.imgselector.selectimage.SelectFragment;
+import io.github.lijunguan.imgselector.data.entity.ImageInfo;
 
-import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
+import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
 
 
 /**
@@ -37,9 +37,9 @@ public class ImageGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private AlbumConfig mAlbumConfig;
 
-    private AlbumFragment.ImageItemListener mListener;
+    private SelectFragment.ImageItemListener mListener;
 
-    public ImageGridAdapter(RequestManager requestManager, AlbumConfig albumConfig, AlbumFragment.ImageItemListener listener) {
+    public ImageGridAdapter(RequestManager requestManager, AlbumConfig albumConfig, SelectFragment.ImageItemListener listener) {
         mRequestManager = checkNotNull(requestManager);
         mAlbumConfig = checkNotNull(albumConfig);
         mListener = listener;

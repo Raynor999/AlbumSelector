@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.album.adapter;
+package io.github.lijunguan.imgselector.selectimage.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.lijunguan.imgselector.R;
-import io.github.lijunguan.imgselector.album.AlbumFragment;
-import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
+import io.github.lijunguan.imgselector.selectimage.SelectFragment;
+import io.github.lijunguan.imgselector.data.entity.AlbumFolder;
 
-import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
+import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
 
 /**
  * Created by lijunguan on 2016/4/13
@@ -33,9 +33,9 @@ public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.Fo
 
     private final RequestManager mRequestManager;
 
-    private AlbumFragment.FolderItemListener mListener;
+    private SelectFragment.FolderItemListener mListener;
 
-    public FolderListAdapter(RequestManager requestManager, AlbumFragment.FolderItemListener listener) {
+    public FolderListAdapter(RequestManager requestManager, SelectFragment.FolderItemListener listener) {
         mRequestManager = checkNotNull(requestManager);
         mListener = listener;
         mData = new ArrayList<>();

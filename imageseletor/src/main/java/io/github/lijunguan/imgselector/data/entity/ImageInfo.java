@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.model.entity;
+package io.github.lijunguan.imgselector.data.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;

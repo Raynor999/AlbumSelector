@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.album;
+package io.github.lijunguan.imgselector.selectimage;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,31 +10,31 @@ import java.util.List;
 
 import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.cropimage.CropActivity;
-import io.github.lijunguan.imgselector.model.AlbumDataSource;
-import io.github.lijunguan.imgselector.model.AlbumRepository;
-import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
-import io.github.lijunguan.imgselector.model.entity.ImageInfo;
+import io.github.lijunguan.imgselector.data.AlbumDataSource;
+import io.github.lijunguan.imgselector.data.AlbumRepository;
+import io.github.lijunguan.imgselector.data.entity.AlbumFolder;
+import io.github.lijunguan.imgselector.data.entity.ImageInfo;
 
-import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
+import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
 
 /**
  * Created by lijunguan on 2016/4/21.
  * emial: lijunguan199210@gmail.com
  * blog: https://lijunguan.github.io
  */
-public class AlbumPresenter implements AlbumContract.Presenter {
+public class SelectPresenter implements SelectContract.Presenter {
 
-    private AlbumContract.View mAlbumView;
+    private SelectContract.View mAlbumView;
 
     private AlbumRepository mAlbumRepository;
 
     private LoaderManager mLoadManager;
 
 
-    public AlbumPresenter(
+    public SelectPresenter(
             @NonNull AlbumRepository albumRepository,
             @NonNull LoaderManager loaderManager,
-            @NonNull AlbumContract.View albumView) {
+            @NonNull SelectContract.View albumView) {
         mLoadManager = checkNotNull(loaderManager, "loader manager cannot be null");
         mAlbumView = checkNotNull(albumView, "albumView cannot be null");
         mAlbumRepository = checkNotNull(albumRepository, "albumRepository cannot be null");

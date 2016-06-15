@@ -23,7 +23,7 @@ import android.support.v4.app.FragmentTransaction;
 
 import io.github.lijunguan.imgselector.R;
 
-import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
+import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
 
 
 /**

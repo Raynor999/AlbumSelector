@@ -36,8 +36,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static io.github.lijunguan.imgselector.utils.CommonUtils.checkArgument;
-import static io.github.lijunguan.imgselector.utils.CommonUtils.checkNotNull;
+import static io.github.lijunguan.imgselector.utils.CheckUtils.checkArgument;
+import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
 
 /**
 

@@ -12,4 +12,12 @@ public class ExampleUnitTest {
     public void addition_isCorrect() throws Exception {
         assertEquals(4, 2 + 2);
     }
+
+    @Test
+    public void shiftingTest() {
+        int digit = (int) Math.pow(2,25);
+        int i = digit >>> 24;
+        System.out.println(digit);
+        System.out.println(i);
+    }
 }

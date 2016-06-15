@@ -1,4 +1,4 @@
-package io.github.lijunguan.imgselector.model;
+package io.github.lijunguan.imgselector.data;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -6,7 +6,7 @@ import android.support.v4.app.LoaderManager;
 
 import java.util.List;
 
-import io.github.lijunguan.imgselector.model.entity.AlbumFolder;
+import io.github.lijunguan.imgselector.data.entity.AlbumFolder;
 
 
 /**

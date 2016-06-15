@@ -1,10 +1,10 @@
-package io.github.lijunguan.imgselector.album.previewimage;
+package io.github.lijunguan.imgselector.previewimage;
 
 import android.support.annotation.NonNull;
 
 import io.github.lijunguan.imgselector.base.BasePresenter;
 import io.github.lijunguan.imgselector.base.BaseView;
-import io.github.lijunguan.imgselector.model.entity.ImageInfo;
+import io.github.lijunguan.imgselector.data.entity.ImageInfo;
 
 /**
  * Created by lijunguan on 2016/4/24.
@@ -27,6 +27,7 @@ public interface ImageContract {
         void selectImage(@NonNull ImageInfo imageInfo, int maxCount, int position);
 
         void unSelectImage(@NonNull ImageInfo imageInfo, int position);
+
     }
 
 }

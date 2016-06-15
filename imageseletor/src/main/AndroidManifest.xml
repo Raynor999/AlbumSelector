@@ -9,16 +9,16 @@
         android:allowBackup="true"
         android:supportsRtl="true">
         <activity
-            android:name=".album.AlbumActivity"
+            android:name=".selectimage.SelectActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="portrait"
             android:label="@string/album_activity_title"
+            android:screenOrientation="portrait"
             android:theme="@style/AlbumTheme" />
 
         <activity
-            android:screenOrientation="portrait"
             android:name=".cropimage.CropActivity"
             android:label="@string/crop_activity_title"
+            android:screenOrientation="portrait"
             android:theme="@style/AlbumTheme" />
     </application>
 

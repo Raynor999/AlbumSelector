@@ -74,8 +74,9 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.fab)
     public void testImageSelector(View view) {
-        ImageSelector imageSelector = ImageSelector.getInstance();
-        loadConfig(imageSelector).startSelect(this);
+//        ImageSelector imageSelector = ImageSelector.getInstance();
+//        loadConfig(imageSelector).startSelect(this);
+        startActivity(new Intent(this,FullscreenActivity.class));
     }
 
 
@@ -137,7 +138,9 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ImageSelector.REQUEST_SELECT_IMAGE) {
             if (resultCode == RESULT_OK) {
+
                 ArrayList<String> imagesPath = data.getStringArrayListExtra(ImageSelector.SELECTED_RESULT);
+                KLog.d("imagesPath ----------------" + imagesPath.get(0));
                 if (isAvatorModel && imagesPath != null) {
                     mRlAvator.setVisibility(View.VISIBLE);
                     Glide.with(this)
