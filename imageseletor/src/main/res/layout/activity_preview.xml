@@ -5,15 +5,15 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".selectimage.SelectActivity"
-    android:fitsSystemWindows="true">
+   >
 
-    <include layout="@layout/layout_appbar" />
+    <include layout="@layout/layout_appbar"
+        />
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/app_bar"
- />
+        />
 
 </android.support.design.widget.CoordinatorLayout>

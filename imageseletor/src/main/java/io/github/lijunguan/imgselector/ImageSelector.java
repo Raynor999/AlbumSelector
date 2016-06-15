@@ -28,6 +28,8 @@ public class ImageSelector {
 
     public static final int REQUEST_CROP_IMAGE = 0x4096;
 
+    public static final int REQUEST_PRVIEW_IMAGE = 0x8192;
+
     public static final String ARG_ALBUM_CONFIG = "albumConfig";
     /**
      * 单选模式

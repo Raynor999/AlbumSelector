@@ -3,7 +3,6 @@ package io.github.lijunguan.imgselector.cropimage;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.View;
 
 import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.base.BaseActivity;
@@ -30,20 +29,10 @@ public class CropActivity extends BaseActivity implements CropFragment.CropImage
             ActivityUtils.addFragmentToActivity(
                     getSupportFragmentManager(),
                     mCropFragment,
-                    CropFragment.TAG,
-                    false
+                    CropFragment.TAG
             );
         }
-
-        findViewById(R.id.btn_submit).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mCropFragment != null)
-                    mCropFragment.cropImage();
-            }
-        });
     }
-
 
 
     @Override
@@ -52,5 +41,11 @@ public class CropActivity extends BaseActivity implements CropFragment.CropImage
         intent.putExtra(CROP_RESULT, path);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    protected void onSubmitBtnClick() {
+        if (mCropFragment != null)
+            mCropFragment.cropImage();
     }
 }

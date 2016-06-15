@@ -1,6 +1,7 @@
 package io.github.lijunguan.imgselector.previewimage;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
@@ -9,15 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.github.lijunguan.imgselector.AlbumConfig;
 import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
-import io.github.lijunguan.imgselector.previewimage.adapter.ImageDetailAdapter;
 import io.github.lijunguan.imgselector.base.BaseFragment;
 import io.github.lijunguan.imgselector.data.entity.ImageInfo;
+import io.github.lijunguan.imgselector.previewimage.adapter.ImageDetailAdapter;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
@@ -50,11 +50,11 @@ public class ImageDetailFragment extends BaseFragment
 
     private ImageDetailAdapter mPagerAdapter;
 
-    public static ImageDetailFragment newInstance(ArrayList<ImageInfo> imageInfos, int currentPosition) {
+    private View mContentView;
+
+    public static ImageDetailFragment newInstance(@NonNull Bundle args) {
+        checkNotNull(args);
         ImageDetailFragment fragment = new ImageDetailFragment();
-        Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_IMAGE_LIST, imageInfos);
-        args.putInt(ARG_CURRENT_POSITION, currentPosition);
         fragment.setArguments(args);
         return fragment;
     }
@@ -88,13 +88,13 @@ public class ImageDetailFragment extends BaseFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragmetn_image_detail, container, false);
-        initViews(rootView);
-
-
+        mContentView = inflater.inflate(R.layout.fragmetn_image_detail, container, false);
+        initViews(mContentView);
         updateIndicator();
-        return rootView;
+        return mContentView;
     }
+
+
 
     private void initViews(View rootView) {
         mViewPager = (ViewPager) rootView.findViewById(R.id.view_pager);
@@ -111,7 +111,7 @@ public class ImageDetailFragment extends BaseFragment
                 }
             }
         });
-        mPagerAdapter = new ImageDetailAdapter(mContext, mImageInfos);
+        mPagerAdapter = new ImageDetailAdapter(mContext, mImageInfos,this);
         mViewPager.setAdapter(mPagerAdapter);
         //复原，切换Viewpager到之前选择的图片位置
         mViewPager.setCurrentItem(mCurrentPosition);
@@ -164,11 +164,13 @@ public class ImageDetailFragment extends BaseFragment
 
     @Override
     public void showToast(CharSequence message) {
-        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mContentView, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onViewTap(View view, float v, float v1) {
-
+        mContext.fullScreenToggle();
     }
+
+
 }

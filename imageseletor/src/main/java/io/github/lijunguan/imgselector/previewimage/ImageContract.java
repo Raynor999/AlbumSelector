@@ -28,6 +28,8 @@ public interface ImageContract {
 
         void unSelectImage(@NonNull ImageInfo imageInfo, int position);
 
+
+
     }
 
 }

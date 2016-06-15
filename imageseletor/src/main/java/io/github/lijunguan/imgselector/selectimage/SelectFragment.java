@@ -34,18 +34,16 @@ import java.util.List;
 import io.github.lijunguan.imgselector.AlbumConfig;
 import io.github.lijunguan.imgselector.ImageSelector;
 import io.github.lijunguan.imgselector.R;
-import io.github.lijunguan.imgselector.selectimage.adapter.FolderListAdapter;
-import io.github.lijunguan.imgselector.selectimage.adapter.ImageGridAdapter;
-import io.github.lijunguan.imgselector.previewimage.ImageDetailFragment;
-import io.github.lijunguan.imgselector.previewimage.ImageDetailPresenter;
-import io.github.lijunguan.imgselector.selectimage.widget.GridDividerDecorator;
 import io.github.lijunguan.imgselector.base.BaseFragment;
 import io.github.lijunguan.imgselector.cropimage.CropActivity;
 import io.github.lijunguan.imgselector.cropimage.CropFragment;
-import io.github.lijunguan.imgselector.data.AlbumRepository;
 import io.github.lijunguan.imgselector.data.entity.AlbumFolder;
 import io.github.lijunguan.imgselector.data.entity.ImageInfo;
-import io.github.lijunguan.imgselector.utils.ActivityUtils;
+import io.github.lijunguan.imgselector.previewimage.ImageDetailFragment;
+import io.github.lijunguan.imgselector.previewimage.PreviewActivity;
+import io.github.lijunguan.imgselector.selectimage.adapter.FolderListAdapter;
+import io.github.lijunguan.imgselector.selectimage.adapter.ImageGridAdapter;
+import io.github.lijunguan.imgselector.selectimage.widget.GridDividerDecorator;
 import io.github.lijunguan.imgselector.utils.FileUtils;
 import io.github.lijunguan.imgselector.utils.KLog;
 
@@ -96,6 +94,8 @@ public class SelectFragment extends BaseFragment
      * 当前选择的相册目录下的 图片集合
      */
     private ArrayList<ImageInfo> mImages;
+
+
     private RequestManager mRequestManager;
 
 
@@ -189,6 +189,14 @@ public class SelectFragment extends BaseFragment
         } else {
             mPresenter.start(); //初始化数据
         }
+    }
+
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.clearCache();
     }
 
     /**
@@ -329,29 +337,12 @@ public class SelectFragment extends BaseFragment
 
     @Override
     public void showImageDetailUi(int currentPosition) {
-        ImageDetailFragment fragment = (ImageDetailFragment) mContext
-                .getSupportFragmentManager()
-                .findFragmentByTag(ImageDetailFragment.TAG);
-
-        if (fragment == null) {
-            fragment = ImageDetailFragment.newInstance(mImages, currentPosition);
-            AlbumRepository albumRepository = AlbumRepository.getInstance(mContext);
-
-            new ImageDetailPresenter(
-                    albumRepository,
-                    fragment,
-                    SelectFragment.this);
-
-            ActivityUtils.addFragmentToActivity(mContext.getSupportFragmentManager(),
-                    fragment,
-                    ImageDetailFragment.TAG,
-                    true); //将ImageDetailFragment 加入返回栈。
-        }
-        mContext.getSupportFragmentManager()
-                .beginTransaction()
-                .hide(this)
-                .show(fragment)
-                .commit();
+        Intent intent = new Intent(mContext, PreviewActivity.class);
+        Bundle args = new Bundle();
+        args.putParcelableArrayList(ImageDetailFragment.ARG_IMAGE_LIST, mImages);
+        args.putInt(ImageDetailFragment.ARG_CURRENT_POSITION, currentPosition);
+        intent.putExtras(args);
+        startActivityForResult(intent,ImageSelector.REQUEST_PRVIEW_IMAGE);
     }
 
     @Override
@@ -416,10 +407,4 @@ public class SelectFragment extends BaseFragment
         void onFloderItemClick(AlbumFolder folder);
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        if (!hidden) {
-            mContext.setToolbarTitle(getString(R.string.album_activity_title));
-        }
-    }
 }

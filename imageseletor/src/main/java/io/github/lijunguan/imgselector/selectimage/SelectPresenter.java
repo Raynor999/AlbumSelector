@@ -87,6 +87,11 @@ public class SelectPresenter implements SelectContract.Presenter {
                     mAlbumView.selectComplete(mAlbumRepository.getSelectedResult(), false);
                 }
                 break;
+
+            case ImageSelector.REQUEST_PRVIEW_IMAGE:
+                if (resultCode == Activity.RESULT_OK) {
+                    returnResult();
+                }
         }
 
     }

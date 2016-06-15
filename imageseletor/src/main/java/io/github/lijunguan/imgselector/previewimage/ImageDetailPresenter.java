@@ -2,7 +2,6 @@ package io.github.lijunguan.imgselector.previewimage;
 
 import android.support.annotation.NonNull;
 
-import io.github.lijunguan.imgselector.selectimage.SelectContract;
 import io.github.lijunguan.imgselector.data.AlbumRepository;
 import io.github.lijunguan.imgselector.data.entity.ImageInfo;
 
@@ -16,16 +15,14 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
 
     private ImageContract.View mImageDetailView;
 
-    private SelectContract.View mAlbumView;
 
     public ImageDetailPresenter(
             @NonNull AlbumRepository albumRepository,
-            @NonNull ImageContract.View imageDetailView,
-            @NonNull SelectContract.View albumView) {
+            @NonNull ImageContract.View imageDetailView
+           ) {
 
         mImageDetailView = checkNotNull(imageDetailView, "ImageContract.View  cannt be null");
         mAlbumRepository = checkNotNull(albumRepository, "AlbumRepository cannt be null");
-        mAlbumView = checkNotNull(albumView,"SelectContract.View cannt be null");
         mImageDetailView.setPresenter(this);
     }
 
@@ -46,7 +43,6 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
         imageInfo.setSelected(true);
         mAlbumRepository.addSelect(imageInfo.getPath());
         mImageDetailView.showSelectedCount(mAlbumRepository.getSelectedCount());
-        mAlbumView.syncCheckboxStatus(position);
     }
 
     @Override
@@ -55,6 +51,5 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
         imageInfo.setSelected(false);
         mAlbumRepository.removeSelect(imageInfo.getPath());
         mImageDetailView.showSelectedCount(mAlbumRepository.getSelectedCount());
-        mAlbumView.syncCheckboxStatus(position);
     }
 }

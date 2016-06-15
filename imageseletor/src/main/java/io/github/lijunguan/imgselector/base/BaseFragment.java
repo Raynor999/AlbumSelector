@@ -5,22 +5,20 @@ import android.support.v4.app.Fragment;
 
 import java.lang.ref.WeakReference;
 
-import io.github.lijunguan.imgselector.selectimage.SelectActivity;
-
 /**
  * Created by lijunguan on 2016/4/8
  * email: lijunguan199210@gmail.com
  * blog : https://lijunguan.github.io
  */
 public class BaseFragment extends Fragment {
-    protected SelectActivity mContext;
+    protected BaseActivity mContext;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         //在Fragment中用 弱引用的方式持有一份Activity 引用，方便在Fragment中使用Context
-        if (context instanceof SelectActivity) {
-            WeakReference<SelectActivity> mActivityRef = new WeakReference<>((SelectActivity) getActivity());
+        if (context instanceof BaseActivity) {
+            WeakReference<BaseActivity> mActivityRef = new WeakReference<>((BaseActivity) getActivity());
             mContext = mActivityRef.get();
         } else {
             throw new IllegalArgumentException("unexcepted context ");

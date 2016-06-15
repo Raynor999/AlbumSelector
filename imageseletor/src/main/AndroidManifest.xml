@@ -20,6 +20,12 @@
             android:label="@string/crop_activity_title"
             android:screenOrientation="portrait"
             android:theme="@style/AlbumTheme" />
+
+        <activity
+            android:name=".previewimage.PreviewActivity"
+            android:label="@string/priview_activity_title"
+            android:screenOrientation="portrait"
+            android:theme="@style/AlbumTheme.FullscreenTheme" />
     </application>
 
 </manifest>

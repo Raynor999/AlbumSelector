@@ -140,8 +140,9 @@ public class AlbumRepository implements AlbumDataSource {
                 KLog.i(TAG, "========nLoadFinished :" + albumFolders.size());
 
                 generalAlbumFolder.setCover(generalAlbumFolder.getImgInfos().get(0));
-                callback.onInitFinish(albumFolders);
+
                 processLoadedAlbumFolder(albumFolders);
+                callback.onInitFinish(getCachedAlbumFolder());
             }
 
 

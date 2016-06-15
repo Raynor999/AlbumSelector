@@ -39,14 +39,11 @@ public class ActivityUtils {
      * 这个操作将会被{@code fragmentManager} 执行
      */
     public static void addFragmentToActivity(@NonNull FragmentManager fragmentManager,
-                                             @NonNull Fragment fragment, String tag, boolean addToBackStack) {
+                                             @NonNull Fragment fragment, String tag) {
         checkNotNull(fragmentManager);
         checkNotNull(fragment);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.fragment_container, fragment, tag);
-        if (addToBackStack) {
-            transaction.addToBackStack(null);
-        }
         transaction.commit();
     }
 
