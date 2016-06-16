@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     public void testImageSelector(View view) {
         ImageSelector imageSelector = ImageSelector.getInstance();
         loadConfig(imageSelector).startSelect(this);
+//        startActivity(new Intent(this,FullscreenActivity.class));
     }
 
 

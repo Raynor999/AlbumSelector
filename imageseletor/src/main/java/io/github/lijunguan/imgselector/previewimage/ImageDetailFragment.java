@@ -18,6 +18,7 @@ import io.github.lijunguan.imgselector.R;
 import io.github.lijunguan.imgselector.base.BaseFragment;
 import io.github.lijunguan.imgselector.data.entity.ImageInfo;
 import io.github.lijunguan.imgselector.previewimage.adapter.ImageDetailAdapter;
+import io.github.lijunguan.imgselector.utils.StatusBarUtil;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
@@ -51,6 +52,10 @@ public class ImageDetailFragment extends BaseFragment
     private ImageDetailAdapter mPagerAdapter;
 
     private View mContentView;
+
+    private View mBottomFl;
+
+
 
     public static ImageDetailFragment newInstance(@NonNull Bundle args) {
         checkNotNull(args);
@@ -99,6 +104,12 @@ public class ImageDetailFragment extends BaseFragment
     private void initViews(View rootView) {
         mViewPager = (ViewPager) rootView.findViewById(R.id.view_pager);
         mCheckBox = (CheckBox) rootView.findViewById(R.id.cb_checkbox);
+        //由于设置了全屏显示，需要根据navigationbar高度动态调整底部CheckBox位置
+        mBottomFl =  rootView.findViewById(R.id.fl_checkbox_container);
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mBottomFl.getLayoutParams();
+        lp.setMargins(0, 0, 0, StatusBarUtil.getNavigationBarHeight(mContext));
+        mBottomFl.requestLayout();
+
         mCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,6 +130,8 @@ public class ImageDetailFragment extends BaseFragment
         mViewPager.addOnPageChangeListener(onPageChangeListener);
         //初始化mCheckBox状态
         mCheckBox.setChecked(mImageInfos.get(mCurrentPosition).isSelected());
+
+
 
     }
 
@@ -169,6 +182,9 @@ public class ImageDetailFragment extends BaseFragment
 
     @Override
     public void onViewTap(View view, float v, float v1) {
+
+        mBottomFl.setVisibility(mBottomFl.getVisibility() == View.VISIBLE ? View.GONE:View.VISIBLE);
+
         mContext.fullScreenToggle();
     }
 

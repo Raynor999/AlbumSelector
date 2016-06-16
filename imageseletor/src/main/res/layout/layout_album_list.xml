@@ -9,7 +9,7 @@
         android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/mask_color"
+        android:background="@color/album_mask_color"
         android:clickable="true"
         android:visibility="gone"/>
 

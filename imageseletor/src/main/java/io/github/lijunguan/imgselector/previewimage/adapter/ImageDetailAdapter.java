@@ -2,6 +2,7 @@ package io.github.lijunguan.imgselector.previewimage.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,7 @@ import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
  * emial: lijunguan199210@gmail.com
  * blog: https://lijunguan.github.io
  */
-public class ImageDetailAdapter extends RecyclingPagerAdapter {
+public class ImageDetailAdapter extends PagerAdapter {
 
     private static final int HOLDER_TAG = 33554432;
 
@@ -45,28 +46,33 @@ public class ImageDetailAdapter extends RecyclingPagerAdapter {
 
 
     @Override
-    public View getView(int position, View convertView, ViewGroup container) {
-        PreviewViewHolder holder;
-        if (convertView != null) {
-            holder = (PreviewViewHolder) convertView.getTag(HOLDER_TAG);
-        } else {
-            convertView = mInflater.inflate(R.layout.item_image_detail, container, false);
-            holder = new PreviewViewHolder(convertView,mListener);
-            //Glide setTag冲突，
-            convertView.setTag(HOLDER_TAG, holder);
-        }
+    public final Object instantiateItem(ViewGroup container, int position) {
+        PhotoView photoView = (PhotoView) mInflater.inflate(R.layout.item_image_detail, container, false);
+        photoView.setOnViewTapListener(mListener);
         mRequestManager
                 .load(mData.get(position).getPath())
                 .asBitmap()
                 .fitCenter()
-                .into(holder.mImageView);
-        return convertView;
+                .into(photoView);
+        container.addView(photoView);
+        return photoView;
+    }
+
+    @Override
+    public final void destroyItem(ViewGroup container, int position, Object object) {
+        View view = (View) object;
+        container.removeView(view);
     }
 
 
     @Override
     public int getCount() {
         return mData.size();
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+        return view == object;
     }
 
 
@@ -78,9 +84,9 @@ public class ImageDetailAdapter extends RecyclingPagerAdapter {
 
         PhotoView mImageView;
 
-        public PreviewViewHolder(View view, PhotoViewAttacher.OnViewTapListener listener) {
+        public PreviewViewHolder(View view) {
             mImageView = (PhotoView) view;
-            mImageView.setOnViewTapListener(listener);
+
         }
     }
 }

@@ -42,7 +42,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private Button mSubmitBtn;
 
-    private View mContentView;
+    protected View mContentView;
 
 
     private final Handler nHandler = new Handler();
@@ -78,10 +78,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     };
 
-    private boolean isFullScreen;
+    private boolean isFullScreen = false;
 
     /**
-     *
      * Some older devices needs a small delay between UI widget updates
      * and a change of the status and navigation bar.
      */
@@ -130,7 +129,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void setStatusBar() {
         int toolBarColor = ImageSelector.getInstance().getConfig().getToolbarColor();
         if (toolBarColor != -1) {
-            StatusBarUtil.setColor(this, toolBarColor);
+           StatusBarUtil.setColor(this, toolBarColor);
             if (mToolbar != null)
                 mToolbar.setBackgroundColor(toolBarColor);
         } else {
@@ -242,9 +241,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void fullScreenToggle() {
         if (isFullScreen) {
-            starFullScreen();
-        } else {
             backFullScreen();
+        } else {
+            starFullScreen();
         }
     }
 
@@ -255,7 +254,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
-        isFullScreen = false;
+        isFullScreen = true;
         // Schedule a runnable to remove the status and navigation bar after a delay
         nHandler.removeCallbacks(mBackFullScreenRunnable);
         nHandler.postDelayed(mFullScreenRunnable, UI_ANIMATION_DELAY);
@@ -266,7 +265,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         // Show the system bar
         mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        isFullScreen = true;
+
+
+        isFullScreen = false;
         // Schedule a runnable to display UI elements after a delay
         nHandler.removeCallbacks(mFullScreenRunnable);
         nHandler.postDelayed(mBackFullScreenRunnable, UI_ANIMATION_DELAY);

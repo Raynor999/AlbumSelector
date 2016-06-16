@@ -11,7 +11,9 @@
     <color name="text">#FFFFFFFF</color>
     <color name="divider">#B6B6B6</color>
     <color name="background">#fffafafa</color>
-    <color name="mask_color">#88000000</color>
+    <color name="album_mask_color">#88000000</color>
 
-    <color name="black_overlay">#66000000</color>
+    <color name="album_black_overlay">#aa727272</color>
+
+
 </resources>

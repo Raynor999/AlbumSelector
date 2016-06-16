@@ -27,9 +27,7 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
     }
 
     public void start() {
-//        AlbumFolder folder = mAlbumRepository.getFolderByImage(mImageInfo);
-//        int index = folder.getImgInfos().indexOf(mImageInfo);
-//        mImageDetailView.showImageDetail(index, folder.getImgInfos());
+
     }
 
 
