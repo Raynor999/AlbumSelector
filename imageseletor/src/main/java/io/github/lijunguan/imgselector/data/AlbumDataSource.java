@@ -7,6 +7,7 @@ import android.support.v4.app.LoaderManager;
 import java.util.List;
 
 import io.github.lijunguan.imgselector.data.entity.AlbumFolder;
+import io.github.lijunguan.imgselector.data.entity.ImageInfo;
 
 
 /**
@@ -19,19 +20,21 @@ import io.github.lijunguan.imgselector.data.entity.AlbumFolder;
 public interface AlbumDataSource {
 
 
-    void initImgRepository(@NonNull LoaderManager loaderManager, @NonNull InitAlbumCallback mCallback);
+    void loadImages(@NonNull LoaderManager loaderManager, @NonNull InitAlbumCallback mCallback);
+
+    void selectedImage(@NonNull ImageInfo igeInfo);
+
+    void unSelectedImage(@NonNull ImageInfo imageInfo);
+
 
     @Nullable
     List<String> getSelectedResult();
 
-    void addSelect(@NonNull String path);
-
-    void removeSelect(@NonNull String path);
-
-    void clearCacheAndSelect();
-
     int getSelectedCount();
 
+    void clearAlbumRepository();
+
+    void updateFolder(AlbumFolder folder);
 
     interface InitAlbumCallback {
 

@@ -22,8 +22,8 @@ import io.github.lijunguan.imgselector.utils.StatusBarUtil;
  */
 public class PreviewActivity extends BaseActivity {
     /**
-     *  由于Actionbar设置的是透明背景，查看背景为纯白图片时，可能干扰Actionbar显示
-     *  所以设置渐变遮罩，提高用户体验，学习google photo
+     * 由于Actionbar设置的是透明背景，查看背景为纯白图片时，可能干扰Actionbar显示
+     * 所以设置渐变遮罩，提高用户体验，学习google photo
      */
     private View mActionbarOverlay;
 
@@ -31,17 +31,16 @@ public class PreviewActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
-        Bundle args = null;
+        int currentPosition = 0;
         if (getIntent() != null) {
-            args = getIntent().getExtras();
+            currentPosition = getIntent().getIntExtra(ImageDetailFragment.ARG_CURRENT_POSITION, 0);
         }
-        if (args == null) return;
 
         ImageDetailFragment fragment = (ImageDetailFragment) getSupportFragmentManager()
                 .findFragmentByTag(ImageDetailFragment.TAG);
 
         if (fragment == null) {
-            fragment = ImageDetailFragment.newInstance(args);
+            fragment = ImageDetailFragment.newInstance(currentPosition);
 
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(),
                     fragment,

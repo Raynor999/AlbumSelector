@@ -3,6 +3,7 @@ package io.github.lijunguan.imgselector.previewimage;
 import android.support.annotation.NonNull;
 
 import io.github.lijunguan.imgselector.data.AlbumRepository;
+import io.github.lijunguan.imgselector.data.entity.AlbumFolder;
 import io.github.lijunguan.imgselector.data.entity.ImageInfo;
 
 import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
@@ -19,7 +20,7 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
     public ImageDetailPresenter(
             @NonNull AlbumRepository albumRepository,
             @NonNull ImageContract.View imageDetailView
-           ) {
+    ) {
 
         mImageDetailView = checkNotNull(imageDetailView, "ImageContract.View  cannt be null");
         mAlbumRepository = checkNotNull(albumRepository, "AlbumRepository cannt be null");
@@ -27,7 +28,14 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
     }
 
     public void start() {
+        loadImages();
+    }
 
+    private void loadImages() {
+        AlbumFolder selectedAlbum = mAlbumRepository.getSelectedAlbum();
+        mImageDetailView.initImageDetailUi(selectedAlbum.getImgInfos());
+        mImageDetailView.showSelectedCount(mAlbumRepository.getSelectedCount());
+        mImageDetailView.updateIndicator();
     }
 
 
@@ -38,16 +46,15 @@ public class ImageDetailPresenter implements ImageContract.Presenter {
             mImageDetailView.showOutOfRange(0);
             return;
         }
-        imageInfo.setSelected(true);
-        mAlbumRepository.addSelect(imageInfo.getPath());
+        mAlbumRepository.selectedImage(imageInfo);
         mImageDetailView.showSelectedCount(mAlbumRepository.getSelectedCount());
     }
 
     @Override
-    public void unSelectImage(@NonNull ImageInfo imageInfo,int position) {
+    public void unSelectImage(@NonNull ImageInfo imageInfo, int position) {
         checkNotNull(imageInfo, "ImageInfo cannot be null");
-        imageInfo.setSelected(false);
-        mAlbumRepository.removeSelect(imageInfo.getPath());
+
+        mAlbumRepository.unSelectedImage(imageInfo);
         mImageDetailView.showSelectedCount(mAlbumRepository.getSelectedCount());
     }
 }

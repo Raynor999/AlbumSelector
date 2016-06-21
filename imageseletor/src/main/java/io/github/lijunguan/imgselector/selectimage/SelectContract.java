@@ -54,6 +54,7 @@ public interface SelectContract {
 
         /**
          * 同步  ImageDetailFragment 界面Checkbox选中状态
+         *
          * @param position
          */
         void syncCheckboxStatus(int position);
@@ -66,7 +67,7 @@ public interface SelectContract {
          *
          * @param folder 选择的相册目录实体
          */
-        void swtichFloder(@NonNull AlbumFolder folder);
+        void swtichFolder(@NonNull AlbumFolder folder);
 
         void previewImage(int position);
 

@@ -27,7 +27,6 @@ import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
  */
 public class ImageDetailAdapter extends PagerAdapter {
 
-    private static final int HOLDER_TAG = 33554432;
 
     private List<ImageInfo> mData = new ArrayList<>();
 
@@ -37,8 +36,7 @@ public class ImageDetailAdapter extends PagerAdapter {
 
     private PhotoViewAttacher.OnViewTapListener mListener;
 
-    public ImageDetailAdapter(Context context, @NonNull List<ImageInfo> data, @NonNull PhotoViewAttacher.OnViewTapListener listener) {
-        mData = checkNotNull(data);
+    public ImageDetailAdapter(Context context, @NonNull PhotoViewAttacher.OnViewTapListener listener) {
         mListener = checkNotNull(listener);
         mRequestManager = Glide.with(context);
         mInflater = LayoutInflater.from(context);
@@ -80,13 +78,10 @@ public class ImageDetailAdapter extends PagerAdapter {
         return mData.get(position);
     }
 
-    static class PreviewViewHolder {
 
-        PhotoView mImageView;
-
-        public PreviewViewHolder(View view) {
-            mImageView = (PhotoView) view;
-
-        }
+    public void replaceData(@NonNull List<ImageInfo> data) {
+        mData = checkNotNull(data);
+        notifyDataSetChanged();
     }
+
 }

@@ -32,6 +32,8 @@ public class CropActivity extends BaseActivity implements CropFragment.CropImage
                     CropFragment.TAG
             );
         }
+
+        setSubmitBtnText(getString(R.string.btn_submit_text),true);
     }
 
 

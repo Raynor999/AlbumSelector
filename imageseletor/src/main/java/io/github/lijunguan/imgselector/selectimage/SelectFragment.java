@@ -90,10 +90,6 @@ public class SelectFragment extends BaseFragment
      * 保存相机拍摄的照片
      */
     private File mTmpFile;
-    /**
-     * 当前选择的相册目录下的 图片集合
-     */
-    private ArrayList<ImageInfo> mImages;
 
 
     private RequestManager mRequestManager;
@@ -159,13 +155,12 @@ public class SelectFragment extends BaseFragment
                 mPresenter.cropImage(imageInfo);
             }
         }
-
     };
 
     FolderItemListener mFolderItemClickListener = new FolderItemListener() {
         @Override
         public void onFloderItemClick(AlbumFolder folder) {
-            mPresenter.swtichFloder(folder);
+            mPresenter.swtichFolder(folder);
         }
     };
 
@@ -176,6 +171,8 @@ public class SelectFragment extends BaseFragment
         initViews(rootView);
         return rootView;
     }
+
+
 
     @Override
     public void onResume() {
@@ -266,7 +263,6 @@ public class SelectFragment extends BaseFragment
 
     @Override
     public void showImages(@NonNull List<ImageInfo> imageInfos) {
-        mImages = (ArrayList<ImageInfo>) checkNotNull(imageInfos);
         mImagesAdapter.replaceData(imageInfos);
         mEmptyView.setVisibility(View.GONE);
     }
@@ -338,11 +334,9 @@ public class SelectFragment extends BaseFragment
     @Override
     public void showImageDetailUi(int currentPosition) {
         Intent intent = new Intent(mContext, PreviewActivity.class);
-        Bundle args = new Bundle();
-        args.putParcelableArrayList(ImageDetailFragment.ARG_IMAGE_LIST, mImages);
-        args.putInt(ImageDetailFragment.ARG_CURRENT_POSITION, currentPosition);
-        intent.putExtras(args);
-        startActivityForResult(intent,ImageSelector.REQUEST_PRVIEW_IMAGE);
+        intent.putExtra(ImageDetailFragment.ARG_CURRENT_POSITION, currentPosition);
+        startActivityForResult(intent, ImageSelector.REQUEST_PRVIEW_IMAGE);
+
     }
 
     @Override

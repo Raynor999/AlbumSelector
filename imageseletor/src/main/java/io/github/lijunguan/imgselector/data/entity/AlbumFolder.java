@@ -95,4 +95,14 @@ public class AlbumFolder implements Parcelable {
             return new AlbumFolder[size];
         }
     };
+
+
+    @Override
+    public int hashCode() {
+        int result = mPath != null ? mPath.hashCode() : 0;
+        result = 31 * result + (mFloderName != null ? mFloderName.hashCode() : 0);
+        result = 31 * result + (mImgInfos != null ? mImgInfos.hashCode() : 0);
+        result = 31 * result + (mCover != null ? mCover.hashCode() : 0);
+        return result;
+    }
 }

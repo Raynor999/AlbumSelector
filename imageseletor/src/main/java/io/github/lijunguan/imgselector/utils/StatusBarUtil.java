@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -14,7 +16,7 @@ import android.widget.LinearLayout;
 
 /**
  * Created by Jaeger on 16/2/14.
- * <p>
+ * <p/>
  * Email: chjie.jaeger@gamil.com
  * GitHub: https://github.com/laobie
  */
@@ -86,7 +88,7 @@ public class StatusBarUtil {
 
     /**
      * 使状态栏半透明
-     * <p>
+     * <p/>
      * 适用于图片作为背景的界面,此时需要图片填充到状态栏
      *
      * @param activity 需要设置的activity
@@ -97,7 +99,7 @@ public class StatusBarUtil {
 
     /**
      * 使状态栏半透明
-     * <p>
+     * <p/>
      * 适用于图片作为背景的界面,此时需要图片填充到状态栏
      *
      * @param activity       需要设置的activity
@@ -126,7 +128,7 @@ public class StatusBarUtil {
 
     /**
      * 使状态栏透明(5.0以上半透明效果,不建议使用)
-     * <p>
+     * <p/>
      * 适用于图片作为背景的界面,此时需要图片填充到状态栏
      *
      * @param activity 需要设置的activity
@@ -251,6 +253,36 @@ public class StatusBarUtil {
         int height = resources.getDimensionPixelSize(resourceId);
         Log.v("dbw", "Navi height:" + height);
         return height;
+    }
+
+    /**
+     * 判断底部navigator是否已经显示
+     *
+     * @param windowManager
+     * @return
+     */
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static boolean hasVirtualKey(WindowManager windowManager) {
+        Display d = windowManager.getDefaultDisplay();
+
+        DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+        d.getRealMetrics(realDisplayMetrics);
+
+
+        int realHeight = realDisplayMetrics.heightPixels;
+        int realWidth = realDisplayMetrics.widthPixels;
+
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        d.getMetrics(displayMetrics);
+
+
+        int displayHeight = displayMetrics.heightPixels;
+        int displayWidth = displayMetrics.widthPixels;
+
+
+        return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
     }
 
     /**

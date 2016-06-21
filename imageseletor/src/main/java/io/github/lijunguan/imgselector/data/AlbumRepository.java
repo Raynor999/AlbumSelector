@@ -1,5 +1,6 @@
 package io.github.lijunguan.imgselector.data;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.text.TextUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +41,14 @@ public class AlbumRepository implements AlbumDataSource {
      */
     private final static int IMAGE_LOADER_ID = 1000;
 
+    /**
+     * 缓存所有相册目录
+     */
     Map<String, AlbumFolder> mCachedFolders;
+
+
+    AlbumFolder mSelectedAlbum;
+
     /**
      * 用户选择的图片路径集合
      */
@@ -48,10 +57,11 @@ public class AlbumRepository implements AlbumDataSource {
     /**
      * 包涵所有图片的相册名  综合的相册名
      */
-    private String mGeneralFolderName;
+    private String mMainFolderName;
 
 
     private final Context mAppContext;
+
 
     private final static String[] IMAGE_PROJECTION = {
             MediaStore.Images.Media.DATA,
@@ -61,11 +71,12 @@ public class AlbumRepository implements AlbumDataSource {
             MediaStore.Images.Media.SIZE,
             MediaStore.Images.Media._ID};
 
-    public static AlbumRepository getInstance(Context context) {
+
+    public static AlbumRepository getInstance(Activity activity) {
         if (mInstance == null) {
             synchronized (AlbumRepository.class) {
                 if (mInstance == null) {
-                    mInstance = new AlbumRepository(context.getApplicationContext());
+                    mInstance = new AlbumRepository(activity);
                     return mInstance;
                 }
             }
@@ -73,22 +84,24 @@ public class AlbumRepository implements AlbumDataSource {
         return mInstance;
     }
 
+
     public AlbumRepository(Context context) {
-
-
-        mGeneralFolderName = context.getString(R.string.label_general_folder_name);
+        mMainFolderName = context.getString(R.string.label_general_folder_name);
         mAppContext = context.getApplicationContext();
 
     }
 
+
     //非空注解，参数都不能为空
     @Override
-    public void initImgRepository(@NonNull LoaderManager loaderManager,
-                                  @NonNull final InitAlbumCallback callback) {
+    public void loadImages(@NonNull LoaderManager loaderManager,
+                           @NonNull final InitAlbumCallback callback) {
+
         checkNotNull(loaderManager);
         checkNotNull(callback);
         if (mCachedFolders != null) {  //如果缓存可用，则立即响应
-            callback.onInitFinish(getCachedAlbumFolder());
+            callback.onInitFinish(getCachedAlbumFolders());
+            KLog.d("load cacehd iamgeInfos");
             return;
         }
 
@@ -98,7 +111,6 @@ public class AlbumRepository implements AlbumDataSource {
                 return new CursorLoader(mAppContext, MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         IMAGE_PROJECTION, null,
                         null, IMAGE_PROJECTION[2] + " DESC");
-
             }
 
             @Override
@@ -109,22 +121,16 @@ public class AlbumRepository implements AlbumDataSource {
                     callback.onDataNoAvaliable();
                     return;
                 }
-                //创建包涵所有图片的相册目录
-                AlbumFolder generalAlbumFolder = new AlbumFolder();
-                ArrayList<ImageInfo> imgList = new ArrayList<>();
-                generalAlbumFolder.setImgInfos(imgList);
-                generalAlbumFolder.setFloderName(mGeneralFolderName);
-                albumFolders.add(generalAlbumFolder);
 
                 while (data.moveToNext()) {
                     ImageInfo imageInfo = createImageInfo(data);
-                    generalAlbumFolder.getImgInfos().add(imageInfo); //每一张图片都加入到allAlbumFolder 目录中
-
-                    File folderFile = new File(imageInfo.getPath()).getParentFile(); //得到当前图片的目录
+                    //得到当前图片的目录
+                    File folderFile = new File(imageInfo.getPath()).getParentFile();
                     String path = folderFile.getAbsolutePath();
                     AlbumFolder albumFloder = getFloderByPath(path, albumFolders);
+
+                    //相册不存在，则创建该相册目录，并添加到相册目录集合中
                     if (albumFloder == null) {
-                        //相册集合中不存在，则创建该相册目录，并添加到集合中
                         albumFloder = new AlbumFolder();
                         albumFloder.setCover(imageInfo);
                         albumFloder.setFloderName(folderFile.getName());
@@ -132,19 +138,19 @@ public class AlbumRepository implements AlbumDataSource {
                         ArrayList<ImageInfo> imageInfos = new ArrayList<>();
                         imageInfos.add(imageInfo);
                         albumFloder.setImgInfos(imageInfos);
+
                         albumFolders.add(albumFloder);
                     } else {
                         albumFloder.getImgInfos().add(imageInfo);
                     }
                 }
-                KLog.i(TAG, "========nLoadFinished :" + albumFolders.size());
-
-                generalAlbumFolder.setCover(generalAlbumFolder.getImgInfos().get(0));
-
-                processLoadedAlbumFolder(albumFolders);
-                callback.onInitFinish(getCachedAlbumFolder());
+                //创建一个包涵所有相册的 主相册
+                albumFolders.add(0, createMainAlbum(data, albumFolders));
+                //缓存数据
+                processAlbumData(albumFolders);
+                KLog.d("==========onLoadFinished:"+albumFolders.size());
+                callback.onInitFinish(getCachedAlbumFolders());
             }
-
 
             @Override
             public void onLoaderReset(Loader<Cursor> loader) {
@@ -153,8 +159,71 @@ public class AlbumRepository implements AlbumDataSource {
         });
     }
 
-    private void processLoadedAlbumFolder(List<AlbumFolder> folders) {
-        if (folders == null) {
+
+    @Override
+    public List<String> getSelectedResult() {
+        return mSelectedResult;
+    }
+
+
+    public AlbumFolder getSelectedAlbum() {
+        return mSelectedAlbum;
+    }
+
+    @Override
+    public void selectedImage(@NonNull ImageInfo imageInfo) {
+        checkNotNull(imageInfo);
+        imageInfo.setSelected(true);
+        selectedImage(imageInfo.getPath());
+    }
+
+    @Override
+    public void unSelectedImage(@NonNull ImageInfo imageInfo) {
+        imageInfo.setSelected(false);
+        mSelectedResult.remove(checkNotNull(imageInfo).getPath());
+    }
+
+    @Override
+    public int getSelectedCount() {
+        return mSelectedResult.size();
+    }
+
+
+    public void clearAlbumRepository() {
+        mSelectedResult.clear();
+        mCachedFolders = null;
+    }
+
+    @Override
+    public void updateFolder(AlbumFolder folder) {
+        checkNotNull(folder);
+        if (mCachedFolders.containsValue(folder)) {
+            mSelectedAlbum = folder;
+        }
+    }
+
+    public void selectedImage(String path) {
+        mSelectedResult.add(checkNotNull(path));
+    }
+
+
+    @NonNull
+    private AlbumFolder createMainAlbum(Cursor data, List<AlbumFolder> albumFolders) {
+        AlbumFolder mainAlbumFolder = new AlbumFolder();
+        mainAlbumFolder.setFloderName(mMainFolderName);
+        ArrayList<ImageInfo> imgList = new ArrayList<>(data.getCount());
+        for (AlbumFolder albumFolder : albumFolders) {
+            imgList.addAll(albumFolder.getImgInfos());
+        }
+        mainAlbumFolder.setImgInfos(imgList);
+        mainAlbumFolder.setCover(imgList.get(0));
+        mainAlbumFolder.setPath(System.currentTimeMillis() + "main_album_folder");
+        return mainAlbumFolder;
+    }
+
+
+    private void processAlbumData(List<AlbumFolder> folders) {
+        if (folders == null || folders.isEmpty()) {
             mCachedFolders = null;
             return;
         }
@@ -162,14 +231,19 @@ public class AlbumRepository implements AlbumDataSource {
             mCachedFolders = new LinkedHashMap<>();
         }
         mCachedFolders.clear();
-        for (AlbumFolder task : folders) {
-            mCachedFolders.put(task.getPath(), task);
+        for (AlbumFolder folder : folders) {
+            mCachedFolders.put(folder.getPath(), folder);
         }
+        //初始化默认选择的相册为MainAlbumFolder
+        mSelectedAlbum = folders.get(0);
     }
 
-    public List<AlbumFolder> getCachedAlbumFolder() {
-        return mCachedFolders == null ? null : new ArrayList<>(mCachedFolders.values());
+    public List<AlbumFolder> getCachedAlbumFolders() {
+        return mCachedFolders == null ?
+                Collections.<AlbumFolder>emptyList() :
+                new ArrayList<>(mCachedFolders.values());
     }
+
 
     /**
      * 根据传入的路径得到AlbumFloder对象
@@ -187,39 +261,12 @@ public class AlbumRepository implements AlbumDataSource {
         return null;
     }
 
-
     private ImageInfo createImageInfo(Cursor data) {
         String imgPath = data.getString(data.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
         String displayName = data.getString(data.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
         long addedTime = data.getLong(data.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED));
         long imageSize = data.getLong(data.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE));
 
-
         return new ImageInfo(imgPath, displayName, addedTime, imageSize);
-    }
-
-    @Override
-    public List<String> getSelectedResult() {
-        return mSelectedResult;
-    }
-
-    @Override
-    public void addSelect(@NonNull String path) {
-        mSelectedResult.add(checkNotNull(path));
-    }
-
-    @Override
-    public void removeSelect(@NonNull String path) {
-        mSelectedResult.remove(checkNotNull(path));
-    }
-
-    @Override
-    public int getSelectedCount() {
-        return mSelectedResult.size();
-    }
-
-    public void clearCacheAndSelect() {
-        mSelectedResult.clear();
-        mCachedFolders = null;
     }
 }

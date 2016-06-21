@@ -2,6 +2,8 @@ package io.github.lijunguan.imgselector.previewimage;
 
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import io.github.lijunguan.imgselector.base.BasePresenter;
 import io.github.lijunguan.imgselector.base.BaseView;
 import io.github.lijunguan.imgselector.data.entity.ImageInfo;
@@ -20,6 +22,8 @@ public interface ImageContract {
         void showOutOfRange(int position);
 
         void showSelectedCount(int count);
+
+        void initImageDetailUi(List<ImageInfo> imageInfos);
     }
 
     interface Presenter extends BasePresenter {
@@ -27,8 +31,6 @@ public interface ImageContract {
         void selectImage(@NonNull ImageInfo imageInfo, int maxCount, int position);
 
         void unSelectImage(@NonNull ImageInfo imageInfo, int position);
-
-
 
     }
 

@@ -1,7 +1,7 @@
 package io.github.lijunguan.imgselector.previewimage;
 
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
@@ -29,19 +29,15 @@ import static io.github.lijunguan.imgselector.utils.CheckUtils.checkNotNull;
  * blog: https://lijunguan.github.io
  */
 public class ImageDetailFragment extends BaseFragment
-        implements ImageContract.View ,
-        PhotoViewAttacher.OnViewTapListener{
+        implements ImageContract.View,
+        PhotoViewAttacher.OnViewTapListener {
     public static final String TAG = ImageDetailFragment.class.getSimpleName();
-
-    public static final String ARG_IMAGE_LIST = "imageInfos";
 
     public static final String ARG_CURRENT_POSITION = "currentPosition";
 
     private ViewPager mViewPager;
 
     private CheckBox mCheckBox;
-
-    private List<ImageInfo> mImageInfos;
 
     private int mCurrentPosition;
 
@@ -56,10 +52,11 @@ public class ImageDetailFragment extends BaseFragment
     private View mBottomFl;
 
 
+    public static ImageDetailFragment newInstance(int mCurrentPosition) {
 
-    public static ImageDetailFragment newInstance(@NonNull Bundle args) {
-        checkNotNull(args);
         ImageDetailFragment fragment = new ImageDetailFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_CURRENT_POSITION, mCurrentPosition);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,7 +65,6 @@ public class ImageDetailFragment extends BaseFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mImageInfos = getArguments().getParcelableArrayList(ARG_IMAGE_LIST);
             mCurrentPosition = getArguments().getInt(ARG_CURRENT_POSITION);
         }
         if (savedInstanceState != null) {
@@ -87,7 +83,7 @@ public class ImageDetailFragment extends BaseFragment
         //保存配置参数,防止Application被kill后，恢复Fragment时，配置参数发送异常
         outState.putParcelable(ImageSelector.ARG_ALBUM_CONFIG, mAlbumConfig);
 
-        outState.putInt(ARG_CURRENT_POSITION,mCurrentPosition);
+        outState.putInt(ARG_CURRENT_POSITION, mCurrentPosition);
     }
 
     @Nullable
@@ -95,21 +91,24 @@ public class ImageDetailFragment extends BaseFragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mContentView = inflater.inflate(R.layout.fragmetn_image_detail, container, false);
         initViews(mContentView);
-        updateIndicator();
         return mContentView;
     }
-
 
 
     private void initViews(View rootView) {
         mViewPager = (ViewPager) rootView.findViewById(R.id.view_pager);
         mCheckBox = (CheckBox) rootView.findViewById(R.id.cb_checkbox);
-        //由于设置了全屏显示，需要根据navigationbar高度动态调整底部CheckBox位置
-        mBottomFl =  rootView.findViewById(R.id.fl_checkbox_container);
-        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mBottomFl.getLayoutParams();
-        lp.setMargins(0, 0, 0, StatusBarUtil.getNavigationBarHeight(mContext));
-        mBottomFl.requestLayout();
 
+       //判断是否有虚拟按键
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                && StatusBarUtil.hasVirtualKey(mContext.getWindowManager())) {
+            //由于设置了全屏显示，需要根据navigationbar高度动态调整底部CheckBox位置
+            mBottomFl = rootView.findViewById(R.id.fl_checkbox_container);
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mBottomFl.getLayoutParams();
+            lp.setMargins(0, 0, 0, StatusBarUtil.getNavigationBarHeight(mContext));
+            mBottomFl.requestLayout();
+
+        }
         mCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,18 +121,30 @@ public class ImageDetailFragment extends BaseFragment
                 }
             }
         });
-        mPagerAdapter = new ImageDetailAdapter(mContext, mImageInfos,this);
+        mPagerAdapter = new ImageDetailAdapter(mContext, this);
         mViewPager.setAdapter(mPagerAdapter);
         //复原，切换Viewpager到之前选择的图片位置
         mViewPager.setCurrentItem(mCurrentPosition);
 
         mViewPager.addOnPageChangeListener(onPageChangeListener);
-        //初始化mCheckBox状态
-        mCheckBox.setChecked(mImageInfos.get(mCurrentPosition).isSelected());
-
-
 
     }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mPresenter.start();
+    }
+
+
+    @Override
+    public void initImageDetailUi(List<ImageInfo> imageInfos) {
+        mPagerAdapter.replaceData(imageInfos);
+        mViewPager.setCurrentItem(mCurrentPosition);
+        //初始化mCheckBox状态
+        mCheckBox.setChecked(imageInfos.get(mCurrentPosition).isSelected());
+    }
+
 
     private ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
         @Override
@@ -175,6 +186,7 @@ public class ImageDetailFragment extends BaseFragment
         }
     }
 
+
     @Override
     public void showToast(CharSequence message) {
         Snackbar.make(mContentView, message, Snackbar.LENGTH_SHORT).show();
@@ -183,7 +195,7 @@ public class ImageDetailFragment extends BaseFragment
     @Override
     public void onViewTap(View view, float v, float v1) {
 
-        mBottomFl.setVisibility(mBottomFl.getVisibility() == View.VISIBLE ? View.GONE:View.VISIBLE);
+        mBottomFl.setVisibility(mBottomFl.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
 
         mContext.fullScreenToggle();
     }

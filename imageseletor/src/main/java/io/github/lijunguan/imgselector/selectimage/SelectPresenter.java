@@ -48,12 +48,11 @@ public class SelectPresenter implements SelectContract.Presenter {
     }
 
     private void loadData() {
-        mAlbumRepository.initImgRepository(mLoadManager, new AlbumDataSource.InitAlbumCallback() {
+        mAlbumRepository.loadImages(mLoadManager, new AlbumDataSource.InitAlbumCallback() {
             @Override
             public void onInitFinish(List<AlbumFolder> folders) {
-                List<ImageInfo> allImages = folders.get(0).getImgInfos();
-                mAlbumView.showImages(allImages);
                 mAlbumView.initFolderList(folders);
+                swtichFolder(mAlbumRepository.getSelectedAlbum());
             }
 
             @Override
@@ -73,7 +72,7 @@ public class SelectPresenter implements SelectContract.Presenter {
                         mAlbumView.showImageCropUi(mTmpFile.getPath());
                         return;
                     }
-                    mAlbumRepository.addSelect(mTmpFile.getPath());
+                    mAlbumRepository.selectedImage(mTmpFile.getPath());
                     mAlbumView.selectComplete(mAlbumRepository.getSelectedResult(), true);
                 } else if (mTmpFile != null && mTmpFile.exists()) {
                     //出错时，删除零时文件,
@@ -83,7 +82,7 @@ public class SelectPresenter implements SelectContract.Presenter {
             case ImageSelector.REQUEST_CROP_IMAGE:
                 if (resultCode == Activity.RESULT_OK) {
                     String path = data.getStringExtra(CropActivity.CROP_RESULT);
-                    mAlbumRepository.addSelect(path);
+                    mAlbumRepository.selectedImage(path);
                     mAlbumView.selectComplete(mAlbumRepository.getSelectedResult(), false);
                 }
                 break;
@@ -97,12 +96,13 @@ public class SelectPresenter implements SelectContract.Presenter {
     }
 
     @Override
-    public void swtichFloder(@NonNull AlbumFolder floder) {
-        checkNotNull(floder);
-        mAlbumView.showImages(floder.getImgInfos());
+    public void swtichFolder(@NonNull AlbumFolder folder) {
+        checkNotNull(folder);
+        //刷新当前选择的相册目录
+        mAlbumRepository.updateFolder(folder);
+        mAlbumView.showImages(folder.getImgInfos());
         mAlbumView.hideFolderList();
     }
-
 
     @Override
     public void selectImage(@NonNull ImageInfo imageInfo, int maxCount, int position) {
@@ -111,16 +111,14 @@ public class SelectPresenter implements SelectContract.Presenter {
             mAlbumView.showOutOfRange(position);
             return;
         }
-        imageInfo.setSelected(true);
-        mAlbumRepository.addSelect(imageInfo.getPath());
+        mAlbumRepository.selectedImage(imageInfo);
         mAlbumView.showSelectedCount(mAlbumRepository.getSelectedCount());
     }
 
     @Override
-    public void unSelectImage(@NonNull ImageInfo imageInfo,int positon) {
+    public void unSelectImage(@NonNull ImageInfo imageInfo, int positon) {
         checkNotNull(imageInfo, "ImageInfo cannot be null");
-        imageInfo.setSelected(false);
-        mAlbumRepository.removeSelect(imageInfo.getPath());
+        mAlbumRepository.unSelectedImage(imageInfo);
         mAlbumView.showSelectedCount(mAlbumRepository.getSelectedCount());
     }
 
@@ -147,7 +145,7 @@ public class SelectPresenter implements SelectContract.Presenter {
     }
 
     public void clearCache() {
-        mAlbumRepository.clearCacheAndSelect();
+        mAlbumRepository.clearAlbumRepository();
     }
 
 }
