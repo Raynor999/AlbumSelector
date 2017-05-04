@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path
+        name="external"
+        path="DCIM/Camera" />
+    <external-cache-path
+        name="external_cache" />
+    <cache-path
+        name="internal_cache" />
+</paths>

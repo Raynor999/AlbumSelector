@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId cfg.packageName
         minSdkVersion cfg.minSDK
-        targetSdkVersion 23
+        targetSdkVersion cfg.targetSDK
         versionCode cfg.version_code
         versionName cfg.version_name
     }

@@ -2,6 +2,7 @@ package io.github.lijunguan.imgselector.album;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -287,13 +289,23 @@ public class AlbumFragment extends BaseFragment
                 e.printStackTrace();
             }
             if (mTmpFile != null && mTmpFile.exists()) {
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTmpFile));
+                Uri uri = getFileUri(getActivity(), mTmpFile);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                 startActivityForResult(cameraIntent, ImageSelector.REQUEST_OPEN_CAMERA);
             } else {
                 showToast(getString(R.string.img_error));
             }
         } else {
             showToast(getString(R.string.msg_no_camera));
+        }
+    }
+
+    private Uri getFileUri(@NonNull Context context, @NonNull File file) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return FileProvider.getUriForFile(context,
+                    context.getApplicationContext().getPackageName() + ".file.provider", file);
+        } else {
+            return Uri.fromFile(file);
         }
     }
 
