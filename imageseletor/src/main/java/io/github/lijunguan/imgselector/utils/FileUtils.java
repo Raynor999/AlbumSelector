@@ -22,10 +22,9 @@ public class FileUtils {
     public static File createTmpFile(Context context) throws IOException {
         File dir;
         if (TextUtils.equals(Environment.getExternalStorageState(), Environment.MEDIA_MOUNTED)) {
-            dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+            dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/Camera");
             if (!dir.exists()) {
-                dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/Camera");
-                if (!dir.exists()) {
+                if (!dir.mkdirs()) {
                     dir = getCacheDirectory(context, true);
                 }
             }

@@ -88,6 +88,21 @@
 - Toolbar和状态栏颜色
     默认： 蓝色#3F51B5  状态栏颜色需API>19 , 4.4 渐变色，5.0以上为纯色填充
 
+#### 适配Android N
+
+add this in AndroidManifest.xml
+
+```xml
+<provider
+    android:authorities="${applicationId}.file.provider"
+    android:name="android.support.v4.content.FileProvider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/album_selector_provider"/>
+</provider>
+```
 
 ## License
 
